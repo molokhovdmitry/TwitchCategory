@@ -6,7 +6,7 @@ Output: category
 
 ## Requirements for the task:
 ### Part 1. Getting data:
-- Getting streamers that are live in a category
+- Getting streamers that are live in a category\
 https://dev.twitch.tv/docs/v5/reference/search#search-streams
 - Getting streams
 - Getting images from stream
