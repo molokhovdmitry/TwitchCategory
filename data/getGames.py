@@ -11,8 +11,11 @@ def getTopGames():
     """
     Get top games.
     
-    Return a dictionary of top `limit` games.
+    Return top games dictionary of format:
+    {game_id: game_name}
     """
+
+    """For some reason when `limit` > 18 it gives `limit - 1` games."""
     limit = 100
 
     # Contact API
@@ -23,13 +26,14 @@ def getTopGames():
     except requests.RequestException:
         return "Request Error"
 
-    # Parse response.
+    # Parse response
     try:
         quote = response.json()
+        print(quote)
         games = dict()
         for game in quote['top']:
             games[game['game']['_id']] = game['game']['name']
-        return games
+        return len(games)
     except (KeyError, TypeError, ValueError):
         return "Parse Error"
 
