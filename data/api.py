@@ -1,3 +1,9 @@
+"""
+This file has functions for requesting:
+    1) Top games by amount of viewers.
+    2) User names broadcasting a specified game ID.
+"""
+
 import sys
 import requests
 
@@ -30,7 +36,7 @@ def getTopGames():
     {game_id: game_name}
     """
     
-    # Number of objects to return
+    # Number of objects to return (100 max)
     first = 100
 
     # Make query
@@ -50,10 +56,10 @@ def getTopGames():
 
 def getStreamers(gameID):
     """
-    Returns a list of streams broadcasting a specified game ID.
+    Returns a list of user names broadcasting a specified game ID.
     """
 
-    # Number of objects to return
+    # Number of objects to return (100 max)
     first = 100
 
     # Make query
