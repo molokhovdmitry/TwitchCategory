@@ -1,10 +1,11 @@
 import sys
 import requests
 
+from config import CLIENT_ID, ACCESS_TOKEN
+
 BASE_URL = 'https://api.twitch.tv/helix/'
-CLIENT_ID = 'gp762nuuoqcoxypju8c569th9wz7q5'
 HEADERS = {
-    'Authorization': 'Bearer hpc4glg4g2pekdmh5wktio1bsahnp9',
+    'Authorization': 'Bearer ' + ACCESS_TOKEN,
     'Client-Id': CLIENT_ID
 }
 
