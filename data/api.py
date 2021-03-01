@@ -9,6 +9,19 @@ HEADERS = {
     'Client-Id': CLIENT_ID
 }
 
+def requestQuery(query):
+    """
+    Makes a request and returns a response.
+    """
+
+    # Contact API
+    try:
+        response = requests.get(BASE_URL + query, headers=HEADERS)
+        response.raise_for_status()
+        return response
+    except requests.RequestException:
+        return None
+
 def getTopGames():
     """
     Get top games.
@@ -16,17 +29,13 @@ def getTopGames():
     Return top games dictionary of format:
     {game_id: game_name}
     """
-
-    # Number of objects to return (max: 100)
+    
+    # Number of objects to return
     first = 100
 
-    # Contact API
-    try:
-        query = f'games/top?first={first}'
-        response = requests.get(BASE_URL + query, headers=HEADERS)
-        response.raise_for_status()
-    except requests.RequestException:
-        return None
+    # Make query
+    query = f'games/top?first={first}'
+    response = requestQuery(query)
 
     # Parse response
     try:
@@ -44,17 +53,13 @@ def getStreamers(gameID):
     Returns a list of streams broadcasting a specified game ID.
     """
 
-    # Number of objects to return (max: 100)
+    # Number of objects to return
     first = 100
 
-    # Contact API
-    try:
-        query = f'streams?game_id={gameID}&first={first}'
-        response = requests.get(BASE_URL + query, headers=HEADERS)
-        response.raise_for_status()
-    except requests.RequestException:
-        return None
-    
+    # Make query
+    query = f'streams?game_id={gameID}&first={first}'
+    response = requestQuery(query)
+
     # Parse response
     try:
         quote = response.json()
