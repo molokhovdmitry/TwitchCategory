@@ -1,20 +1,9 @@
 """
-This file will interact with a database.
-
-Functions:
-Create tables if they don't exist
-Update categories (`games` table)
-Choose category with the least amount of data (`game_frames` table)
-Add frame to database (`frames` table, `game_frames` table)
+This file will connect to a database and create tables if they don't exist.
 """
-import sqlalchemy
-from sqlalchemy.sql.expression import null
-from sqlalchemy.sql.functions import current_timestamp
-from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import Date
-from config import DB_USER, DB_PASSWORD
 
-from datetime import datetime
+from sqlalchemy.sql.schema import ForeignKey
+from config import DB_USER, DB_PASSWORD
 
 # Connect to postgres database
 DATABASE = {
@@ -34,13 +23,11 @@ engine = create_engine(URL(**DATABASE), echo=True)
 Session = sessionmaker(bind=engine)
 
 
-
-# Create tables
+# Define schema
 from sqlalchemy.ext.declarative import declarative_base
-
 Base = declarative_base()
 
-
+from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 
 class Game(Base):
@@ -85,6 +72,7 @@ class GameFrames(Base):
                         f"frame_count='{self.frame_count}'" + \
                 ")>"
 
+# Create tables if they don't exist
 Base.metadata.create_all(engine)
 
 """
