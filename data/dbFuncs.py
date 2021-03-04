@@ -33,8 +33,23 @@ def updateGames(session, games):
     `games` is a dictionary of format:
     {game_id: game_name}
     """
+    for game in games:
+        
+        id = game
+        name = games[game]
+
+        # Check if it already exists in the database
+        if not session.query(Game).filter_by(id=id).all():
+
+            # Insert `game` and `id` if not exist
+            game = Game(id=id, name=name)
+            session.add(game)
+    
+    """
+    # Print all games
     for game in session.query(Game).all():
         print(game)
+    """
 
 def minDataCategory():
     raise NotImplementedError
