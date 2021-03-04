@@ -69,5 +69,15 @@ def minDataCategory(session):
 
 
 
-def addFrame():
-    raise NotImplementedError
+def addFrame(session, path, game_id, user_name):
+    """Updates `frames` table """
+
+    frame = Frame(path=path, game_id=game_id, user_name=user_name)
+
+    session.add(frame)
+
+    """
+    # Print
+    for frame in session.query(Frame).all():
+        print(frame)
+    """
