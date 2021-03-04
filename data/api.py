@@ -33,6 +33,22 @@ def getTopGames():
     Return top games dictionary of format:
     {game_id: game_name}
     """
+
+    notVideoGames = {
+        "509658": "Just Chatting",
+        "26936": "Music",
+        "509660": "Art",
+        "518203": "Sports",
+        "417752": "Talk Shows & Podcasts",
+        "509670": "Science & Technology",
+        "66082": "Games + Demos",
+        "5899": "Stocks And Bonds",
+        "743": "Chess",
+        "27284": "Retro",
+        "509659": "ASMR",
+        "488190": "Poker",
+        "498566": "Slots"
+    }
     
     # Number of objects to return (100 max)
     first = 100
@@ -46,7 +62,11 @@ def getTopGames():
         quote = response.json()
         games = dict()
         for game in quote['data']:
-            games[game['id']] = game['name']
+            id = game['id']
+            name = game['name']
+            if id in notVideoGames or name in notVideoGames.values():
+                continue
+            games[id] = name
         return games
     except (KeyError, TypeError, ValueError):
         return None
