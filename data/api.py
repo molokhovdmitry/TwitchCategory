@@ -16,7 +16,7 @@ HEADERS = {
 }
 
 def requestQuery(query):
-    """Makes a request and returns a response."""
+    """Make a request and returns a response."""
 
     # Contact API
     try:
@@ -28,7 +28,7 @@ def requestQuery(query):
 
 def getTopGames():
     """
-    Gets top games.
+    Get top games.
     
     Return top games dictionary of format:
     {game_id: game_name}
@@ -73,7 +73,7 @@ def getTopGames():
 
 
 def getStreamers(gameID):
-    """Returns a list of user names broadcasting a specified game ID."""
+    """Return a list of user names broadcasting a specified game ID."""
 
     # Number of objects to return (100 max)
     first = 100
