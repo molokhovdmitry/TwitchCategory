@@ -48,7 +48,7 @@ class Frame(Base):
     id = Column(Integer, primary_key=True)
     path = Column(String)
     game_id = Column(Integer, ForeignKey(Game.id))
-    user_name = Column(String)
+    user_login = Column(String)
     date = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
