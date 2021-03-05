@@ -1,6 +1,6 @@
 # TwitchCategory
 ## About the project
-Recognizes twitch stream category (not a game, game(specify game)) with a neural network.\
+Recognizes twitch stream category (games only) with a neural network.\
 Input: channel name\
 Output: category
 
