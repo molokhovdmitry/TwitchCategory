@@ -48,7 +48,7 @@ def updateGames(session, games):
         # Check if it already exists in the database
         if not session.query(Game).filter_by(id=id).all():
 
-            # Insert `game` and `id` if not exist
+            # Insert `game` and `id` if not exists
             game = Game(id=id, name=name)
             session.add(game)
 
@@ -61,7 +61,7 @@ def minDataCategory(session):
 
 
 def addFrame(session, path, game_id, user_name):
-    """Add frame's information to `frames` table."""
+    """Add frame information to `frames` table."""
 
     frame = Frame(path=path, game_id=game_id, user_name=user_name)
     session.add(frame)

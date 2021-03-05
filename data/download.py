@@ -29,9 +29,12 @@ def downloadStream(login):
 
     # Get stream qualities
     qualities = [quality for quality in links]
-    if "480p" in qualities:
-        # Get 480p `.m3u8` url
-        m3u8 = links["480p"].url
+
+    if "480p" not in qualities:
+        print("No 480p")
+        return None
+    # Get 480p `.m3u8` url
+    m3u8 = links["480p"].url
     
     # Get `.m3u8` file
     response = requests.get(m3u8).text
