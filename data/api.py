@@ -16,7 +16,7 @@ HEADERS = {
 }
 
 def requestQuery(query):
-    """Make a request and returns a response."""
+    """Make a request and return a response."""
 
     # Contact API
     try:
@@ -81,17 +81,13 @@ def getStreamers(gameID):
     # Make query
     query = f'streams?game_id={gameID}&first={first}'
     response = requestQuery(query)
-
+    
     # Parse response
     try:
         quote = response.json()
         streams = list()
         for stream in quote['data']:
-            streams.append(stream['user_name'])
+            streams.append(stream['user_login'])
         return streams
     except (KeyError, TypeError, ValueError):
         return None
-
-# Debug
-#print(getTopGames())
-#print(getStreamers('27471'))

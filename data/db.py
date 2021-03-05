@@ -56,7 +56,7 @@ class Frame(Base):
                         f"id='{self.id}'," + \
                         f"path='{self.path}'," + \
                         f"game_id='{self.game_id}', " + \
-                        f"user_name='{self.user_name}'," + \
+                        f"user_login='{self.user_login}'," + \
                         f"date='{self.date}'" + \
                 ")>"
 
