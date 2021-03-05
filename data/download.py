@@ -47,6 +47,8 @@ def downloadStream(login):
         for link, i in zip(links, range(1, len(links) + 1)):
             # Request `.ts` file
             segment = requests.get(link).content
+
+            # Save file
             name = f"segment{i}.ts"
             with open(name, 'wb') as f:
                 f.write(segment)
