@@ -8,11 +8,20 @@ Functions:
 
 import streamlink
 import requests
-from subprocess import Popen
-from time import sleep
 import sys
 import re
+import subprocess
+import os
 
+# Create required folders if not exist
+downloadPath = f"..{os.sep}downloadedData"
+framePath = downloadPath + f"{os.sep}frames"
+tempPath = downloadPath + f"{os.sep}temp"
+
+if not os.path.exists(downloadPath):
+    os.mkdir(downloadPath)
+    os.mkdir(framePath)
+    os.mkdir(tempPath)
 
 def downloadStream(login):
     """
@@ -52,10 +61,13 @@ def downloadStream(login):
             segment = requests.get(link).content
 
             # Save file
-            name = f"segment{i}.ts"
+            name = f"{tempPath}{os.sep}segment{i}.ts"
             with open(name, 'wb') as f:
                 f.write(segment)
 
+def convert(segment):
+    print
 
 def saveFrames(segment):
+    """Save frames from video files."""
     raise NotImplementedError
