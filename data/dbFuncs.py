@@ -7,7 +7,7 @@ functions to contact the database:
 """
 
 from db import Session
-from db import Game, Frame, GameFrames
+from db import Game, Frame
 
 from contextlib import contextmanager
 
@@ -34,7 +34,7 @@ def sessionScope():
 
 def updateGames(session, games):
     """
-    Update `games` table.
+    Update `games` and `game_frames` table.
 
     `games` input is a dictionary of format:
     {game_id: game_name}
@@ -48,16 +48,15 @@ def updateGames(session, games):
         # Check if it already exists in the database
         if not session.query(Game).filter_by(id=id).all():
 
-            # Insert `game` and `id` if not exists
-            game = Game(id=id, name=name)
+            # Insert game in tables if not exists
+            game = Game(id=id, name=name, frames=0)
             session.add(game)
 
 
 def minDataCategory(session):
     """Find a category (game ID) with minimum amount of frames."""
 
-    return session.query(GameFrames.game_id).\
-           order_by(GameFrames.frame_count).first()[0]
+    return session.query(Game.id).order_by(Game.frames).first()[0]
 
 
 def addFrame(session, path, game_id, user_name):

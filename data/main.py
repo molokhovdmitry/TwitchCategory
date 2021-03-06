@@ -8,9 +8,10 @@ with sessionScope() as session:
     #addFrame(session, "/aasdfsdf/gsasdfdf/453345.png", "500188", "pokelawls")
     print
 
+
 """
 for streamer in getStreamers(9618):
     print(streamer)
     downloadStream(streamer)
 """
-downloadStream("nymn")
+#downloadStream("nymn")

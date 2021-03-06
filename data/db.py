@@ -35,11 +35,13 @@ class Game(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    frames = Column(Integer)
 
     def __repr__(self):
         return f"<Game(" + \
                         f"id='{self.id}', " + \
-                        f"name='{self.name}'" + \
+                        f"name='{self.name}', " + \
+                        f"frames='{self.frames}'" + \
                 ")>"
 
 class Frame(Base):
@@ -58,18 +60,6 @@ class Frame(Base):
                         f"game_id='{self.game_id}', " + \
                         f"user_login='{self.user_login}'," + \
                         f"date='{self.date}'" + \
-                ")>"
-
-class GameFrames(Base):
-    __tablename__ = "game_frames"
-
-    game_id = Column(Integer, ForeignKey(Game.id), primary_key=True)
-    frame_count = Column(Integer)
-
-    def __repr__(self):
-        return f"<GameFrames(" + \
-                        f"game_id='{self.game_id}'," + \
-                        f"frame_count='{self.frame_count}'" + \
                 ")>"
 
 # Create tables if they don't exist
