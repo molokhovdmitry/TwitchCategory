@@ -107,3 +107,4 @@ def lastAddedNum(gameID):
         return 0
     numbers = [int(file.rstrip('.jpg')) for file in files]
     return max(numbers)
+    
