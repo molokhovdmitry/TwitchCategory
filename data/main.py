@@ -14,4 +14,6 @@ for streamer in getStreamers(9618):
     print(streamer)
     downloadStream(streamer)
 """
-#downloadStream("nymn")
+
+for path in downloadFrames("vadikus007", 45345):
+    print(path)
