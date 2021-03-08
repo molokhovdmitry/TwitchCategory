@@ -46,8 +46,16 @@ def updateGames(session, games):
         name = games[game]
 
         # Check if it already exists in the database
-        if not session.query(Game).filter_by(id=id).all():
+        if session.query(Game).filter_by(id=id).all():
 
+            # Get frame amount
+            frames = session.query(Frame).filter_by(game_id=id).count()
+
+            # Update frames
+            session.query(Game).filter_by(id=id).\
+                update({Game.frames: frames}, synchronize_session=False)
+        
+        else:
             # Insert game in tables if not exists
             game = Game(id=id, name=name, frames=0)
             session.add(game)

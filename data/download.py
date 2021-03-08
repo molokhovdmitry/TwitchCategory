@@ -56,42 +56,43 @@ def downloadFrames(login, gameID):
     
     # Get `.m3u8` file
     response = requests.get(m3u8).text
+    print(response)
     # Ensure that `.m3u8` file links to stream source and not to ads
     if response.lower().count("twitch-ad") > 1:
         print("Ad.")
         return None
-    else:
-        # Get segment links
-        links = re.findall(r'(https?://\S+)', response)[1:-2]
-
-        # Download and save all frames from segments
-        frameNumber = lastAddedNum(gameID) + 1
-        for link, i in zip(links, range(1, len(links) + 1)):
-
-            # Request `.ts` file
-            segment = requests.get(link).content
-
-            # Save file
-            segmentPath = f"{tempPath}segment{i}.ts"
-            with open(segmentPath, 'wb') as f:
-                f.write(segment)
-
-            # Open segment with cv2
-            video = cv2.VideoCapture(segmentPath)
-
-            # Get first frame and save
-            frame = video.read()[1]
-            framePath = f"{gamePath}{frameNumber}.jpg"
-            cv2.imwrite(framePath, frame)
-            frameNumber += 1
-
-            # Delete segment
-            os.remove(segmentPath)
-
-            # Yield path to save in database
-            yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
         
-        print("Downloaded frames.")
+    # Get segment links
+    links = re.findall(r'(https?://\S+)', response)[1:-2]
+
+    # Download and save all frames from segments
+    frameNumber = lastAddedNum(gameID) + 1
+    for link, i in zip(links, range(1, len(links) + 1)):
+
+        # Request `.ts` file
+        segment = requests.get(link).content
+
+        # Save file
+        segmentPath = f"{tempPath}segment{i}.ts"
+        with open(segmentPath, 'wb') as f:
+            f.write(segment)
+
+        # Open segment with cv2
+        video = cv2.VideoCapture(segmentPath)
+
+        # Get first frame and save
+        frame = video.read()[1]
+        framePath = f"{gamePath}{frameNumber}.jpg"
+        cv2.imwrite(framePath, frame)
+        frameNumber += 1
+
+        # Delete segment
+        os.remove(segmentPath)
+
+        # Yield path to save in database
+        yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
+    
+    print("Downloaded frames.")
 
 
 def lastAddedNum(gameID):
@@ -107,4 +108,3 @@ def lastAddedNum(gameID):
         return 0
     numbers = [int(file.rstrip('.jpg')) for file in files]
     return max(numbers)
-    

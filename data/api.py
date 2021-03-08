@@ -72,8 +72,8 @@ def getTopGames():
         return None
 
 
-def getStreamers(gameID):
-    """Return a list of user names broadcasting a specified game ID."""
+def getStreams(gameID):
+    """Return a list of user logins broadcasting a specified game ID."""
 
     # Number of objects to return (100 max)
     first = 100
@@ -85,9 +85,9 @@ def getStreamers(gameID):
     # Parse response
     try:
         quote = response.json()
-        streams = list()
+        streams = set()
         for stream in quote['data']:
-            streams.append(stream['user_login'])
+            streams.add(stream['user_login'])
         return streams
     except (KeyError, TypeError, ValueError):
         return None
