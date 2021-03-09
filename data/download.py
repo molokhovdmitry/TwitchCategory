@@ -56,7 +56,6 @@ def downloadFrames(login, gameID):
     
     # Get `.m3u8` file
     response = requests.get(m3u8).text
-    print(response)
     # Ensure that `.m3u8` file links to stream source and not to ads
     if response.lower().count("twitch-ad") > 1:
         print("Ad.")
@@ -99,7 +98,7 @@ def lastAddedNum(gameID):
     """
     Return last added frame number for a `gameID` folder.
 
-    Return 0 if no files in directory.
+    Return 0 if no files in folder.
     """
 
     gamePath = f"{framesPath}{gameID}{os.sep}"

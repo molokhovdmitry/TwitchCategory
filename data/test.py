@@ -3,10 +3,22 @@ from api import *
 from dbFuncs import *
 
 
-for path in downloadFrames("nymn", 76457):
-    print(path)
+"""
+with sessionScope() as session:
+    updateFrameCount(session)
+    for game in session.query(Game).all():
+        print(game)
+"""
+
+
+
 
 """
+for path in downloadFrames("nymn", 76457):
+    print(path)
+"""
+
+
 def a(k):
     for i in range(5):
         if k == 0:
@@ -14,6 +26,8 @@ def a(k):
             return None
         yield i
 
-for b in a(0):
+c = False
+for b in a(1):
+    c = True
     print(b)
-"""
+print(c)

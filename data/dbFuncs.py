@@ -46,19 +46,24 @@ def updateGames(session, games):
         name = games[game]
 
         # Check if it already exists in the database
-        if session.query(Game).filter_by(id=id).all():
-
-            # Get frame amount
-            frames = session.query(Frame).filter_by(game_id=id).count()
-
-            # Update frames
-            session.query(Game).filter_by(id=id).\
-                update({Game.frames: frames}, synchronize_session=False)
-        
-        else:
+        if not session.query(Game).filter_by(id=id).all():
             # Insert game in tables if not exists
             game = Game(id=id, name=name, frames=0)
             session.add(game)
+
+
+def updateFrameCount(session):
+    """Update `frames` for every game in `games` table."""
+
+    # Get all games
+    for game in session.query(Game).all():
+
+        # Get game frames
+        frames = session.query(Frame).filter_by(game_id=game.id).count()
+
+        # Update frames
+        session.query(Game).filter_by(id=game.id).\
+            update({Game.frames: frames}, synchronize_session=False)
 
 
 def minDataCategory(session):
@@ -67,8 +72,8 @@ def minDataCategory(session):
     return session.query(Game.id).order_by(Game.frames).first()[0]
 
 
-def addFrame(session, path, game_id, user_name):
+def addFrame(session, path, game_id, user_login):
     """Add frame information to `frames` table."""
 
-    frame = Frame(path=path, game_id=game_id, user_name=user_name)
+    frame = Frame(path=path, game_id=game_id, user_login=user_login)
     session.add(frame)

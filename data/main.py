@@ -7,53 +7,50 @@ import threading
 import random
 
 def inputThread(inputList):
-    """
-    Thread that waits for an input.
-    """
+    """Thread that waits for an input."""
     input()
     print("Interrupting.")
     inputList.append(True)
 
-"""
-Start a thread that updates `inputList` with inputs.
-"""
+"""Start a thread that updates `inputList` with inputs."""
 inputList = []
 threading.Thread(target=inputThread, args=(inputList, )).start()
 print("Press Enter to stop downloading.")
 
 
-# Update data while no input
+# Update data while no input (Enter not pressed)
 while not inputList:
     
     with sessionScope() as session:
         # Update top categories
         games = getTopGames()
         updateGames(session, games)
+        updateFrameCount(session)
 
         # Get category with least data
         gameID = minDataCategory(session)
 
         # Update category (download frames 5 times)
+        downloadCount = 0
         # Get streams from category
         streams = getStreams(gameID)
-        triedStreams = set()
-        for _ in range(5):
+        while downloadCount < 5:
 
             # Get random stream
-            stream = random.choice(streams.difference(triedStreams))
-            triedStreams.add(stream)
+            stream = streams.pop()
 
-            
-
+            print(f"Stream: {stream}, gameID: {gameID}")
 
             # Download frames from stream, update database
-
+            download = False
+            for framePath in downloadFrames(stream, gameID):
+                download = True
+                # Save frame in database
+                addFrame(session, framePath, gameID, stream)
+            
+            downloadCount += download
+        
+with sessionScope() as session:
+    updateFrameCount(session)
 
 print("Completed.")
-
-# Print table contents
-with sessionScope() as session:
-    for query in session.query(Game).all():
-        print(query)
-    for query in session.query(Frame).all():
-        print(query)
