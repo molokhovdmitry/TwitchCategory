@@ -1,11 +1,14 @@
 """
 This file will connect to a database and create tables if they don't exist.
+
+Made with:
+https://docs.sqlalchemy.org/en/13/orm/tutorial.html#object-relational-tutorial
 """
 
-from sqlalchemy.sql.schema import ForeignKey
+
+"""Connect to postgres database."""
 from config import DB_USER, DB_PASSWORD
 
-# Connect to postgres database
 DATABASE = {
     'drivername': 'postgres',
     'host': 'localhost',
@@ -17,18 +20,21 @@ DATABASE = {
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
-from sqlalchemy.orm import session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(URL(**DATABASE), echo=True)
 Session = sessionmaker(bind=engine)
 
 
-# Define schema
+"""Create schema."""
 from sqlalchemy.ext.declarative import declarative_base
+
 Base = declarative_base()
 
-from datetime import datetime
+from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime
+
+from datetime import datetime
 
 class Game(Base):
     __tablename__ = "games"
@@ -62,5 +68,6 @@ class Frame(Base):
                         f"date='{self.date}'" + \
                 ")>"
 
-# Create tables if they don't exist
+
+"""Create tables if they don't exist."""
 Base.metadata.create_all(engine)
