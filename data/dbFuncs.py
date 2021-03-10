@@ -1,9 +1,12 @@
 """
 This file has a context manager for managing database sessions and 
-functions to contact the database:
-    1) Update `games` table.
+functions to contact the database.
+
+Functions:
+    1) Update `games` table with new games.
+    2) Update `frames` for every game in `games` table.
     2) Find a category (game ID) with minimum amount of frames.
-    3) Add frame's information to `frames` table.
+    3) Add frame information to `frames` table.
 """
 
 from db import Session
@@ -34,7 +37,7 @@ def sessionScope():
 
 def updateGames(session, games):
     """
-    Update `games` and `game_frames` table.
+    Update `games` table.
 
     `games` input is a dictionary of format:
     {game_id: game_name}
@@ -45,9 +48,10 @@ def updateGames(session, games):
         id = game
         name = games[game]
 
-        # Check if it already exists in the database
+        """Check if the game already exists in the database."""
         if not session.query(Game).filter_by(id=id).all():
-            # Insert game in tables if not exists
+
+            """Insert game in tables if not exists."""
             game = Game(id=id, name=name, frames=0)
             session.add(game)
 
@@ -55,13 +59,13 @@ def updateGames(session, games):
 def updateFrameCount(session):
     """Update `frames` for every game in `games` table."""
 
-    # Get all games
+    """Get all games."""
     for game in session.query(Game).all():
 
-        # Get game frames
+        """Get game frames."""
         frames = session.query(Frame).filter_by(game_id=game.id).count()
 
-        # Update frames
+        """Update frames."""
         session.query(Game).filter_by(id=game.id).\
             update({Game.frames: frames}, synchronize_session=False)
 
