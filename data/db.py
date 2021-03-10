@@ -1,5 +1,5 @@
 """
-This file will connect to a database and create tables if they don't exist.
+This file connects to a database and creates tables if they don't exist.
 
 Made with:
 https://docs.sqlalchemy.org/en/13/orm/tutorial.html#object-relational-tutorial
