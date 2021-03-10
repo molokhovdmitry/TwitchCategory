@@ -12,12 +12,17 @@ import re
 import os
 import cv2
 
+IMG_HEIGHT = 480
+IMG_WIDTH = 854
+
+from config import DOWNLOAD_PATH
+
 # Create required folders if not exist
-downloadPath = f"..{os.sep}downloadedData{os.sep}"
+downloadPath = DOWNLOAD_PATH
 framesPath = downloadPath + f"{os.sep}frames{os.sep}"
 tempPath = downloadPath + f"{os.sep}temp{os.sep}"
 
-# Check if paths exist
+# Ensure paths exist
 if not os.path.exists(downloadPath):
     os.mkdir(downloadPath)
 if not os.path.exists(framesPath):
@@ -45,29 +50,24 @@ def downloadFrames(login, gameID):
     """
     links = streamlink.streams(f"https://www.twitch.tv/{login}")
 
-    # Get stream qualities
-    qualities = [quality for quality in links]
-
-    if "480p" not in qualities:
-        print("No 480p")
-        return None
-    # Get 480p `.m3u8` url
-    m3u8 = links["480p"].url
+    # Get best quality `.m3u8` url
+    m3u8 = links["best"].url
     
     # Get `.m3u8` file
     response = requests.get(m3u8).text
+    print(response)
     # Ensure that `.m3u8` file links to stream source and not to ads
     if response.lower().count("twitch-ad") > 1:
         print("Ad.")
         return None
         
     # Get segment links
-    links = re.findall(r'(https?://\S+)', response)[1:-2]
+    links = re.findall(r'(https?://\S+)', response)[2:-2]
 
     # Download and save all frames from segments
     frameNumber = lastAddedNum(gameID) + 1
     for link, i in zip(links, range(1, len(links) + 1)):
-
+        print(link)
         # Request `.ts` file
         segment = requests.get(link).content
 
@@ -79,8 +79,11 @@ def downloadFrames(login, gameID):
         # Open segment with cv2
         video = cv2.VideoCapture(segmentPath)
 
-        # Get first frame and save
+        # Get first frame
         frame = video.read()[1]
+
+        # Resize frame and save
+        frame = cv2.resize(frame, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv2.INTER_AREA)
         framePath = f"{gamePath}{frameNumber}.jpg"
         cv2.imwrite(framePath, frame)
         frameNumber += 1

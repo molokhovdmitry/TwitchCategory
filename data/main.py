@@ -32,9 +32,10 @@ while not inputList:
 
         # Update category (download frames 5 times)
         downloadCount = 0
+        downloadAttempts = 0
         # Get streams from category
         streams = getStreams(gameID)
-        while downloadCount < 5:
+        while streams and downloadCount < 5 and downloadAttempts < 10:
 
             # Get random stream
             stream = streams.pop()
@@ -49,6 +50,7 @@ while not inputList:
                 addFrame(session, framePath, gameID, stream)
             
             downloadCount += download
+            downloadAttempts += 1
         
 with sessionScope() as session:
     updateFrameCount(session)
