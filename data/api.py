@@ -1,10 +1,12 @@
 """
-This file has functions for requesting:
-    1) Top games by amount of viewers.
-    2) User names broadcasting a specified game ID.
+This file has functions that get data from twitch api.
+
+Functions:
+    1) Request helper function.
+    2) Get top games by amount of viewers.
+    3) Get user logins broadcasting a specified game ID.
 """
 
-import sys
 import requests
 
 from config import CLIENT_ID, ACCESS_TOKEN
@@ -18,7 +20,7 @@ HEADERS = {
 def requestQuery(query):
     """Make a request and return a response."""
 
-    # Contact API
+    """Contact API."""
     try:
         response = requests.get(BASE_URL + query, headers=HEADERS)
         response.raise_for_status()
@@ -28,8 +30,6 @@ def requestQuery(query):
 
 def getTopGames():
     """
-    Get top games.
-    
     Return top games dictionary of format:
     {game_id: game_name}
     """
@@ -50,14 +50,14 @@ def getTopGames():
         "498566": "Slots"
     }
     
-    # Number of objects to return (100 max)
-    first = 100
+    """Number of objects to return (100 max)."""
+    first = 25
 
-    # Make query
+    """Make query."""
     query = f'games/top?first={first}'
     response = requestQuery(query)
 
-    # Parse response
+    """Parse response."""
     try:
         quote = response.json()
         games = dict()
@@ -73,16 +73,15 @@ def getTopGames():
 
 
 def getStreams(gameID):
-    """Return a list of user logins broadcasting a specified game ID."""
+    """Return a set of user logins broadcasting a specified game ID."""
 
-    # Number of objects to return (100 max)
+    """Number of objects to return (100 max)."""
     first = 100
 
-    # Make query
-    query = f'streams?game_id={gameID}&first={first}'
+    query = f"streams?game_id={gameID}&first={first}"
     response = requestQuery(query)
     
-    # Parse response
+    """Parse response."""
     try:
         quote = response.json()
         streams = set()
