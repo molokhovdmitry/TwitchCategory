@@ -1,6 +1,8 @@
 config.py
 downloadedData/
 
+test.py
+
 venv/
 
 *.pyc
