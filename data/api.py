@@ -70,7 +70,7 @@ def getTopGames():
                 continue
 
             """Ensure the game is streamed by more than 75 streamers."""
-            if getStreams(id) > 75:
+            if len(getStreams(id)) > 90:
                 games[id] = name
         return games
     except (KeyError, TypeError, ValueError):
