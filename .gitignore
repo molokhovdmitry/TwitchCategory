@@ -3,6 +3,7 @@ downloadedData/
 
 log.txt
 
+dbPrint.py
 test.py
 
 venv/
