@@ -64,9 +64,14 @@ def getTopGames():
         for game in quote['data']:
             id = game['id']
             name = game['name']
+
+            """Ensure it's a game and it is streamed by more than 75 streamers."""
             if id in notVideoGames or name in notVideoGames.values():
                 continue
-            games[id] = name
+
+            """Ensure the game is streamed by more than 75 streamers."""
+            if getStreams(id) > 75:
+                games[id] = name
         return games
     except (KeyError, TypeError, ValueError):
         return None
