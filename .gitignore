@@ -1,6 +1,8 @@
 config.py
 downloadedData/
 
+log.txt
+
 test.py
 
 venv/

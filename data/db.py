@@ -15,7 +15,7 @@ DATABASE = {
     'port': '5432',
     'username': DB_USER,
     'password': DB_PASSWORD,
-    'database': 'mydb'
+    'database': 'TwitchCategory'
 }
 
 from sqlalchemy import create_engine
