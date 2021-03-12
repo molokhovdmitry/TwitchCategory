@@ -54,6 +54,9 @@ def downloadFrames(login, gameID):
     links = streamlink.streams(f"https://www.twitch.tv/{login}")
 
     """Get best quality `.m3u8` url."""
+    if not links:
+        print("Streamer not live.")
+        return None
     m3u8 = links["best"].url
     
     """Get `.m3u8` file."""
