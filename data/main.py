@@ -9,6 +9,7 @@ frames from 5 random streams.
 from download import downloadFrames
 from api import *
 from dbFuncs import *
+import random
 
 """
 Make a thread that will stop the while loop on input.
@@ -50,7 +51,8 @@ while not inputList:
         while streams and downloadCount < 5 and downloadAttempts < 10:
 
             """Get random stream."""
-            stream = streams.pop()
+            stream = random.choice.list(streams)
+            streams.discard(stream)
 
             print(f"Stream: {stream}, gameID: {gameID}")
 
