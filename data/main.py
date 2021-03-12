@@ -29,6 +29,8 @@ print("Press Enter to stop downloading.")
 
 
 """Update data while no input (Enter not pressed)."""
+downloadCountGlobal = 0
+adCount = 0
 while not inputList:
     
     with sessionScope() as session:
@@ -66,8 +68,14 @@ while not inputList:
             downloadCount += download
             downloadAttempts += 1
 
+            downloadCountGlobal += download
+            adCount += not download
+            
+
 """Update database."""
 with sessionScope() as session:
     updateFrameCount(session)
 
 print("Done.")
+print(f"Download frames from {downloadCountGlobal} streams. Got {adCount} ads.")
+
