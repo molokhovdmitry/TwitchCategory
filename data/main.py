@@ -51,7 +51,7 @@ while not inputList:
         while streams and downloadCount < 5 and downloadAttempts < 10:
 
             """Get random stream."""
-            stream = random.choice.list(streams)
+            stream = random.choice(list(streams))
             streams.discard(stream)
 
             print(f"Stream: {stream}, gameID: {gameID}")
