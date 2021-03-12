@@ -58,7 +58,6 @@ def downloadFrames(login, gameID):
     
     """Get `.m3u8` file."""
     response = requests.get(m3u8).text
-    
     """Ensure that `.m3u8` file links to stream source and not to ads."""
     if response.lower().count("twitch-ad") > 1:
         print("Ad.")
@@ -70,6 +69,7 @@ def downloadFrames(login, gameID):
     """Download and save all frames from segments."""
     frameNumber = lastAddedNum(gameID) + 1
     for link, i in zip(links, range(1, len(links) + 1)):
+        
         """Request `.ts` file."""
         segment = requests.get(link).content
 
@@ -78,23 +78,31 @@ def downloadFrames(login, gameID):
         with open(segmentPath, 'wb') as f:
             f.write(segment)
 
-        """Open segment with cv2."""
-        video = cv2.VideoCapture(segmentPath)
+        try:
+            """Open segment with cv2."""
+            video = cv2.VideoCapture(segmentPath)
 
-        """Get first frame."""
-        frame = video.read()[1]
+            """Get first frame."""
+            frame = video.read()[1]
 
-        """Resize frame and save."""
-        frame = cv2.resize(frame, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv2.INTER_AREA)
-        framePath = f"{gamePath}{frameNumber}.jpg"
-        cv2.imwrite(framePath, frame)
-        frameNumber += 1
+            """Resize frame and save."""
+            frame = cv2.resize(frame, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv2.INTER_AREA)
+            framePath = f"{gamePath}{frameNumber}.jpg"
+            cv2.imwrite(framePath, frame)
+            frameNumber += 1
 
-        """Delete segment."""
-        os.remove(segmentPath)
+            """Delete segment."""
+            os.remove(segmentPath)
 
-        """Yield path to save in database."""
-        yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
+            """Yield path to save in database."""
+            yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
+
+        except:
+            print("Error. Couldn't get a frame.")
+            print(m3u8)
+            print(link)
+
+
     
     print("Downloaded frames.")
 
