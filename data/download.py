@@ -69,7 +69,7 @@ def downloadFrames(login, gameID):
     """Download and save all frames from segments."""
     frameNumber = lastAddedNum(gameID) + 1
     for link, i in zip(links, range(1, len(links) + 1)):
-        
+
         """Request `.ts` file."""
         segment = requests.get(link).content
 
@@ -101,8 +101,6 @@ def downloadFrames(login, gameID):
             print("Error. Couldn't get a frame.")
             print(m3u8)
             print(link)
-
-
     
     print("Downloaded frames.")
 
