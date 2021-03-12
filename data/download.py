@@ -91,16 +91,15 @@ def downloadFrames(login, gameID):
             cv2.imwrite(framePath, frame)
             frameNumber += 1
 
-            """Delete segment."""
-            os.remove(segmentPath)
-
             """Yield path to save in database."""
             yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
 
         except:
-            print("Error. Couldn't get a frame.")
-            print(m3u8)
-            print(link)
+            print("Error. Couldn't get a frame from segment.")
+
+        finally:
+            """Delete segment."""
+            os.remove(segmentPath)
     
     print("Downloaded frames.")
 
