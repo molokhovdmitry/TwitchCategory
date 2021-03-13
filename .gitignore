@@ -6,7 +6,7 @@ log.txt
 dbPrint.py
 test.py
 
-venv/
+.python-version
 
 *.pyc
 __pycache__/
