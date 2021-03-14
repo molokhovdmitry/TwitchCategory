@@ -56,6 +56,9 @@ def getTopGames():
     """Make query."""
     query = f'games/top?first={first}'
     response = requestQuery(query)
+    if not response:
+        print("Error. No response from API.")
+        return None
 
     """Parse response."""
     try:

@@ -12,7 +12,7 @@ import streamlink
 import requests
 import re
 import os
-import cv2
+import cv2 as cv
 
 """Saved image resolution."""
 IMG_HEIGHT = 480
@@ -86,16 +86,17 @@ def downloadFrames(login, gameID):
             f.write(segment)
 
         try:
-            """Open segment with cv2."""
-            video = cv2.VideoCapture(segmentPath)
+            """Open segment with cv."""
+            video = cv.VideoCapture(segmentPath)
 
-            """Get first frame."""
+            """Get first frame and release video."""
             frame = video.read()[1]
+            video.release()
 
             """Resize frame and save."""
-            frame = cv2.resize(frame, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv2.INTER_AREA)
+            frame = cv.resize(frame, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv.INTER_AREA)
             framePath = f"{gamePath}{frameNumber}.jpg"
-            cv2.imwrite(framePath, frame)
+            cv.imwrite(framePath, frame)
             frameNumber += 1
 
             """Yield path to save in database."""

@@ -38,6 +38,9 @@ while not inputList:
 
         """Update top categories."""
         games = getTopGames()
+        if not games:
+            print("Error. Could not get top games.")
+            continue
         updateGames(session, games)
         updateFrameCount(session)
 
