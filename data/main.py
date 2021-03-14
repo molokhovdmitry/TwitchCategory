@@ -12,7 +12,7 @@ from dbFuncs import *
 import random
 
 """
-Make a thread that will stop the while loop on input.
+Make a thread that will stop the while loop on an input.
 """
 import threading
 
@@ -30,7 +30,8 @@ print("Press Enter to stop downloading.")
 
 """Update data while no input (Enter not pressed)."""
 downloadCountGlobal = 0
-adCount = 0
+failCount = 0
+frameCount = 0
 while not inputList:
     
     with sessionScope() as session:
@@ -43,39 +44,43 @@ while not inputList:
         """Get category with least data."""
         gameID = minDataCategory(session)
 
-        """Update category (download frames 5 times)."""
-        
-        downloadCount = 0
-        downloadAttempts = 0
+    """Update category (download frames 5 times)."""
+    
+    downloadCount = 0
+    downloadAttempts = 0
 
-        """Get streams from category."""
-        streams = getStreams(gameID)
-        while streams and downloadCount < 5 and downloadAttempts < 10:
+    """Get streams from category."""
+    streams = getStreams(gameID)
+    while streams and downloadCount < 5 and downloadAttempts < 10:
 
-            """Get random stream."""
-            stream = random.choice(list(streams))
-            streams.discard(stream)
+        """Get random stream."""
+        stream = random.choice(list(streams))
+        streams.discard(stream)
 
-            print(f"Stream: {stream}, gameID: {gameID}")
+        print(f"Stream: {stream}, gameID: {gameID}")
 
-            """Download frames from stream, update database."""
-            download = False
-            for framePath in downloadFrames(stream, gameID):
-                download = True
-                """Save frame in database."""
+        """Download frames from a stream, update the database."""
+        download = False
+        for framePath in downloadFrames(stream, gameID):
+            download = True
+            frameCount += 1
+
+            """Save a frame in the database."""
+            with sessionScope() as session:
                 addFrame(session, framePath, gameID, stream)
-            
-            downloadCount += download
-            downloadAttempts += 1
+        
+        downloadCount += download
+        downloadAttempts += 1
 
-            downloadCountGlobal += download
-            adCount += not download
+        downloadCountGlobal += download
+        failCount += not download
             
 
-"""Update database."""
+"""Update the database."""
 with sessionScope() as session:
     updateFrameCount(session)
 
-print("Done.")
-print(f"Download frames from {downloadCountGlobal} streams. Got {adCount} ads.")
 
+print("Done.")
+print(f"Downloaded {frameCount} frames from {downloadCountGlobal} stream(s). " + \
+      f"Failed {failCount} time(s).")
