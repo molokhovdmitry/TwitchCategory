@@ -8,12 +8,12 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-
+import sys
 
 
 from config import DATA_PATH
-#import pathlib
-#directory = pathlib.Path(DATA_PATH)
+import pathlib
+directory = pathlib.Path(DATA_PATH)
 
 #imageCount = len(list(directory.glob("*/*.jpg")))
 
@@ -45,22 +45,19 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
 
 AUTOTUNE = tf.data.AUTOTUNE
 
-train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
+train_ds = train_ds.cache().shuffle(50).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
 
+image_batch, labels_batch = next(iter(train_ds))
+print(image_batch)
+print(labels_batch)
 
 
+normalization_layer = layers.experimental.preprocessing.Rescaling(1./255)
 
-
-
-
-
-
-"""
-
-data = tf.keras.preprocessing.image_dataset_from_directory(
-    DATA_PATH,
-    image_size=(480, 854)
-)
-"""
+normalized_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
+image_batch, labels_batch = next(iter(normalized_ds))
+first_image = image_batch[0]
+# Notice the pixels values are now in `[0,1]`.
+print(np.min(first_image), np.max(first_image)) 
