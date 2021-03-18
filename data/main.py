@@ -6,9 +6,9 @@ frames from 5 random streams.
 """
 
 
-from download import downloadFrames
-from api import *
-from dbFuncs import *
+from data.download import downloadFrames
+from data.api import *
+from data.dbFuncs import *
 import random
 
 """

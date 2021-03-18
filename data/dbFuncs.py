@@ -9,8 +9,8 @@ Functions:
     3) Add frame information to `frames` table.
 """
 
-from db import Session
-from db import Game, Frame
+from data.db import Session
+from data.db import Game, Frame
 
 from contextlib import contextmanager
 
