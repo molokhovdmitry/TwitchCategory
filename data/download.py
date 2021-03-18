@@ -22,8 +22,8 @@ IMG_WIDTH = 854
 from config import DOWNLOAD_PATH
 
 downloadPath = DOWNLOAD_PATH
-framesPath = downloadPath + f"{os.sep}frames{os.sep}"
-tempPath = downloadPath + f"{os.sep}temp{os.sep}"
+framesPath = downloadPath + f"frames{os.sep}"
+tempPath = downloadPath + f"temp{os.sep}"
 
 """Ensure paths exist."""
 if not os.path.exists(downloadPath):
@@ -33,20 +33,26 @@ if not os.path.exists(framesPath):
 if not os.path.exists(tempPath):
     os.mkdir(tempPath)
 
-def downloadFrames(login, gameID):
+def downloadFrames(login, gameID=None):
     """
     Download stream segments in best quality, get frames from segments,
-    resize frames to required resolution and save them in `gameID` folder.
+    resize frames to required resolution and save them.
     
-    Yield saved frame paths.
+    Saves in `framesPath`/`gameID` folder if `gameID` is passed,
+    else saves in `framesPath`/`temp`.
+    
+    Yields saved frame paths.
     Returns `None` if gets an ad.
     """
 
-    """Create `gameID` folder if not exists."""
-    gamePath = f"{framesPath}{gameID}{os.sep}"
-    if not os.path.exists(gamePath):
-        os.mkdir(gamePath)
-
+    if gameID:
+        """Create `gameID` folder if not exists."""
+        downloadPath = f"{framesPath}{gameID}{os.sep}"
+        if not os.path.exists(downloadPath):
+            os.mkdir(downloadPath)
+    else:
+        downloadPath = tempPath
+    
     """
     Get a dictionary of format {`quality`: `url`} containing 
     `.m3u8` file urls for every quality.
@@ -74,7 +80,7 @@ def downloadFrames(login, gameID):
     links = re.findall(r'(https?://\S+)', response)[2:-2]
 
     """Download and save all frames from segments."""
-    frameNumber = lastAddedNum(gameID) + 1
+    frameNumber = lastAddedNum(downloadPath) + 1
     for link, i in zip(links, range(1, len(links) + 1)):
 
         """Request `.ts` file."""
@@ -95,12 +101,16 @@ def downloadFrames(login, gameID):
 
             """Resize frame and save."""
             frame = cv.resize(frame, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv.INTER_AREA)
-            framePath = f"{gamePath}{frameNumber}.jpg"
+            framePath = f"{downloadPath}{frameNumber}.jpg"
             cv.imwrite(framePath, frame)
             frameNumber += 1
-
-            """Yield path to save in database."""
-            yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
+            
+            if gameID:
+                """Yield path for saving in the database."""
+                yield f"{gameID}{os.sep}{os.path.basename(framePath)}"
+            else:
+                """Yield path for recognition."""
+                yield framePath
 
         except:
             print("Error. Couldn't get a frame from segment.")
@@ -112,18 +122,18 @@ def downloadFrames(login, gameID):
     print("Downloaded frames.")
 
 
-def lastAddedNum(gameID):
+def lastAddedNum(downloadPath):
     """
-    Return last added frame number for a `gameID` folder.
+    Return last added frame number for a `downloadPath` directory.
 
-    Return 0 if no files in folder.
+    Return 0 if no files in directory.
     """
 
-    gamePath = f"{framesPath}{gameID}{os.sep}"
-    files = os.listdir(gamePath)
+    files = os.listdir(downloadPath)
     if not files:
         return 0
     
     """Get all frame numbers and return max."""
     numbers = [int(file.rstrip('.jpg')) for file in files]
     return max(numbers)
+   
