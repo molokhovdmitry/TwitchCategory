@@ -12,7 +12,7 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
-from data.download import downloadFrames
+from data.download import downloadFrames, delTempFiles
 
 from config import DATA_PATH
 IMG_HEIGHT = 180
@@ -24,14 +24,22 @@ CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
 
 
 def main():
-    login = "drjayfisto"
+    login = "gaules"
     frames = list(downloadFrames(login))
     
+    if not frames:
+        print("Error. Ad.")
+        return
+    scores = []
     for frame in frames:
-        recognize(frame)
+        scores.append(recognize(frame))
     
+    scores = np.add.reduce(scores)[0]
+    index = np.argmax(scores)
+    print(CLASS_NAMES[index])
+
     """Delete frames."""
-    #TODO
+    delTempFiles()
 
 
 def recognize(imgPath):
@@ -48,7 +56,6 @@ def recognize(imgPath):
 
     predictions = model(img_array)
     score = tf.nn.softmax(predictions[0])
-
     #for prediction in predictions:
     #    print(list(prediction))
 
@@ -57,6 +64,7 @@ def recognize(imgPath):
         .format(CLASS_NAMES[np.argmax(score)], 100 * np.max(score))
     )
 
+    return predictions
 
 
 

@@ -13,6 +13,7 @@ import requests
 import re
 import os
 import cv2 as cv
+import pathlib
 
 """Saved image resolution."""
 IMG_HEIGHT = 480
@@ -136,4 +137,11 @@ def lastAddedNum(downloadPath):
     """Get all frame numbers and return max."""
     numbers = [int(file.rstrip('.jpg')) for file in files]
     return max(numbers)
-   
+
+
+def delTempFiles():
+    """Delete files in `tempPath`."""
+    
+    path = pathlib.Path(tempPath)
+    for file in list(path.glob("*")):
+        file.unlink()

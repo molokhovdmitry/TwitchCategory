@@ -81,3 +81,7 @@ def addFrame(session, path, game_id, user_login):
 
     frame = Frame(path=path, game_id=game_id, user_login=user_login)
     session.add(frame)
+
+
+def gameIDtoName(gameID):
+    raise NotImplementedError
