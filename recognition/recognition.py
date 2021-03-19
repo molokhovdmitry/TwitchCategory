@@ -34,9 +34,7 @@ def recognize(login):
 
     """Recognize frames."""
     frames = list(downloadFrames(login))
-    print(frames)
     if not frames:
-        print("Error.")
         sys.exit()
     scores = [recognizeFrame(frame) for frame in frames]
 
@@ -54,8 +52,7 @@ def recognize(login):
     gameID = CLASS_NAMES[index]
 
     """Get game name from game ID."""
-    with sessionScope() as session:
-        game = dbGameIDtoName(session, gameID)
+    game = apiGameIDtoName(gameID)
     print(game)
     print(score)
 
