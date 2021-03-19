@@ -25,7 +25,7 @@ CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
 
 
 def main():
-    login = "murzofix"
+    login = "csgomc_ru"
     frames = list(downloadFrames(login))
     
     if not frames:
