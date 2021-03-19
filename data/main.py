@@ -5,14 +5,14 @@ finds streams in that category. After that it tries to download
 frames from 5 random streams.
 """
 
+import random
 
 from data.download import downloadFrames
 from data.api import *
 from data.dbFuncs import *
-import random
 
 """
-Make a thread that will stop the while loop on an input.
+Make a thread that will stop the while loop on input.
 """
 import threading
 

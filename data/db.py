@@ -5,6 +5,10 @@ Made with:
 https://docs.sqlalchemy.org/en/13/orm/tutorial.html#object-relational-tutorial
 """
 
+from sqlalchemy import create_engine
+from sqlalchemy.engine.url import URL
+from sqlalchemy.orm import sessionmaker
+
 
 """Connect to postgres database."""
 from config import DB_USER, DB_PASSWORD
@@ -18,9 +22,6 @@ DATABASE = {
     'database': 'TwitchCategory'
 }
 
-from sqlalchemy import create_engine
-from sqlalchemy.engine.url import URL
-from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(URL(**DATABASE), echo=True)
 Session = sessionmaker(bind=engine)

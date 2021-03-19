@@ -9,10 +9,11 @@ Functions:
     3) Add frame information to `frames` table.
 """
 
+from contextlib import contextmanager
+
 from data.db import Session
 from data.db import Game, Frame
 
-from contextlib import contextmanager
 
 @contextmanager
 def sessionScope():
@@ -84,6 +85,6 @@ def addFrame(session, path, game_id, user_login):
 
 
 def gameIDtoName(session, gameID):
-    """Converts game ID to name."""
+    """Converts game ID to name using the database."""
 
     return session.query(Game.name).filter_by(id=gameID).first()[0]

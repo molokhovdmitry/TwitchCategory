@@ -7,6 +7,7 @@ Functions:
     3) Get user logins broadcasting a specified game ID.
 """
 
+from multiprocessing import Value
 import requests
 
 from config import CLIENT_ID, ACCESS_TOKEN
@@ -96,5 +97,20 @@ def getStreams(gameID):
         for stream in quote['data']:
             streams.add(stream['user_login'])
         return streams
+    except (KeyError, TypeError, ValueError):
+        return None
+    
+
+def gameIDtoName(gameID):
+    """Converts game ID to name using the API."""
+
+    query = f"games?id={gameID}"
+    response = requestQuery(query)
+
+    """Parse response."""
+    try:
+        quote = response.json()
+        game = quote['data'][0]['name']
+        return game
     except (KeyError, TypeError, ValueError):
         return None

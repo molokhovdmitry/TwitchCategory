@@ -2,10 +2,12 @@
 This file creates the model.
 """
 
+import pathlib
+import matplotlib.pyplot as plt
+
 import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
-import matplotlib.pyplot as plt
 
 """
 GPU support fix.
@@ -21,7 +23,6 @@ IMG_HEIGHT = 180
 IMG_WIDTH = 180
 
 """Get all classes."""
-import pathlib
 CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
 NUM_CLASSES = len(CLASS_NAMES)
 
@@ -29,26 +30,28 @@ NUM_CLASSES = len(CLASS_NAMES)
 def main():
     """Create a model."""
 
-    train_ds, val_ds = load_data(DATA_PATH)
+    """Load the data."""
+    trainData, valData = loadData(DATA_PATH)
 
-    model = get_model()
-
+    """Create and compile the model."""
+    model = getModel()
     model.summary()
 
     """Fit the model and save the history."""
-    history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS)
+    history = model.fit(trainData, validation_data=valData, epochs=EPOCHS)
 
     """Save the model to a file."""
-    model.save("model.h5")
+    model.save("model/model.h5")
     print("Model saved.")
 
     """Make loss and accuracy plots on the training and validation sets."""
-    make_plots(history, EPOCHS)
+    makePlots(history, EPOCHS)
 
 
-def load_data(data_dir):
+def loadData(data_dir):
     """Load the data. Return tuple (`train_ds`, `val_ds`)."""
 
+    """Training data."""
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
         data_dir,
         validation_split=0.2,
@@ -58,6 +61,7 @@ def load_data(data_dir):
         batch_size=64
     )
 
+    """Validation data."""
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
         data_dir,
         validation_split=0.2,
@@ -67,6 +71,7 @@ def load_data(data_dir):
         batch_size=32
     )
 
+    """Configure the dataset for performance."""
     AUTOTUNE = tf.data.AUTOTUNE
     train_ds = train_ds.cache().shuffle(50).prefetch(buffer_size=AUTOTUNE)
     val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
@@ -74,7 +79,7 @@ def load_data(data_dir):
     return train_ds, val_ds
 
 
-def get_model():
+def getModel():
     """Create and compile neural network."""
 
     model = Sequential([
@@ -102,7 +107,7 @@ def get_model():
     return model
 
 
-def make_plots(history, epochs):
+def makePlots(history, epochs):
     """Visualize training results."""
 
     acc = history.history['accuracy']

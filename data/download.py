@@ -8,16 +8,19 @@ Functions:
 2) Get frames from a segment and save them in filesystem and database.
 """
 
-import streamlink
+import os
+import pathlib
 import requests
 import re
-import os
+
+import streamlink
 import cv2 as cv
-import pathlib
+
 
 """Saved image resolution."""
 IMG_HEIGHT = 480
 IMG_WIDTH = 854
+
 
 """Create required folders if not exist."""
 from config import DOWNLOAD_PATH
@@ -33,6 +36,7 @@ if not os.path.exists(framesPath):
     os.mkdir(framesPath)
 if not os.path.exists(tempPath):
     os.mkdir(tempPath)
+
 
 def downloadFrames(login, gameID=None):
     """
