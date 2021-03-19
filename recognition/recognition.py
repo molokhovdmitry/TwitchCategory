@@ -13,6 +13,7 @@ config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
 from data.download import downloadFrames, delTempFiles
+from data.dbFuncs import gameIDtoName, sessionScope
 
 from config import DATA_PATH
 IMG_HEIGHT = 180
@@ -24,7 +25,7 @@ CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
 
 
 def main():
-    login = "gaules"
+    login = "murzofix"
     frames = list(downloadFrames(login))
     
     if not frames:
@@ -36,7 +37,12 @@ def main():
     
     scores = np.add.reduce(scores)[0]
     index = np.argmax(scores)
-    print(CLASS_NAMES[index])
+    gameID = CLASS_NAMES[index]
+    print(gameID)
+    """Access the database."""
+    with sessionScope() as session:
+        game = gameIDtoName(session, gameID)
+    print(game)
 
     """Delete frames."""
     delTempFiles()

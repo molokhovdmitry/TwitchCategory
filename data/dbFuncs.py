@@ -83,5 +83,7 @@ def addFrame(session, path, game_id, user_login):
     session.add(frame)
 
 
-def gameIDtoName(gameID):
-    raise NotImplementedError
+def gameIDtoName(session, gameID):
+    """Converts game ID to name."""
+
+    return session.query(Game.name).filter_by(id=gameID).first()[0]
