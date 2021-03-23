@@ -59,7 +59,7 @@ def getTopGames():
     query = f'games/top?first={first}'
     response = requestQuery(query)
     if not response:
-        print("Error. No response from API.")
+        print("Error. No response from API. (getTopGames)")
         return None
 
     """Parse response."""
@@ -79,6 +79,7 @@ def getTopGames():
                 games[id] = name
         return games
     except (KeyError, TypeError, ValueError):
+        print("Error. Can't parse the response.")
         return None
 
 
@@ -90,6 +91,10 @@ def getStreams(gameID):
 
     query = f"streams?game_id={gameID}&first={first}"
     response = requestQuery(query)
+
+    if not response:
+        print("Error. No response from API. (getStreams)")
+        return None
     
     """Parse response."""
     try:

@@ -6,6 +6,7 @@ frames from 5 random streams.
 """
 
 import random
+import time
 
 from data.download import downloadFrames
 from data.api import *
@@ -40,6 +41,7 @@ while not inputList:
         games = getTopGames()
         if not games:
             print("Error. Could not get top games.")
+            time.sleep(5)
             continue
         updateGames(session, games)
         updateFrameCount(session)
@@ -54,6 +56,10 @@ while not inputList:
 
     """Get streams from category."""
     streams = getStreams(gameID)
+    if not streams:
+        print("Error. Could not get streams.")
+        continue
+
     while streams and downloadCount < 5 and downloadAttempts < 10:
 
         """Get random stream."""
