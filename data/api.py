@@ -45,6 +45,7 @@ def getTopGames():
         "66082": "Games + Demos",
         "5899": "Stocks And Bonds",
         "743": "Chess",
+        "369418": "GeoGuessr",
         "27284": "Retro",
         "509659": "ASMR",
         "488190": "Poker",
