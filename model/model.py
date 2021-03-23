@@ -17,7 +17,8 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
-from config import DATA_PATH
+from config import DOWNLOAD_PATH
+DATA_PATH = DOWNLOAD_PATH + "frames"
 EPOCHS = 10
 IMG_HEIGHT = 180
 IMG_WIDTH = 180

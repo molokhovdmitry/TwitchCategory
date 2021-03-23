@@ -1,16 +1,18 @@
 """
-This file downloads specified stream and predicts the game.
+This file downloads specified stream frames, loads them into a model
+and predicts the game.
 """
 
 import sys
 import numpy as np
+import os
 
 import tensorflow as tf
 from tensorflow import keras
 
 from data.download import downloadFrames, delTempFiles
+from data.api import gameIDtoName
 from data.dbFuncs import gameIDtoName as dbGameIDtoName, sessionScope
-from data.api import gameIDtoName as apiGameIDtoName
 
 """
 GPU support fix.
@@ -21,7 +23,8 @@ config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
 
-from config import DATA_PATH
+from config import DOWNLOAD_PATH
+DATA_PATH = DOWNLOAD_PATH + "frames"
 IMG_HEIGHT = 180
 IMG_WIDTH = 180
 
@@ -31,6 +34,7 @@ CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
 
 
 def recognize(login):
+    """Recognize stream game by frames."""
 
     """Recognize frames."""
     frames = list(downloadFrames(login))
@@ -44,7 +48,7 @@ def recognize(login):
     """Add tensors."""
     scores = np.add.reduce(scores)[0]
 
-    """Calculate score."""
+    """Calculate score for a stream."""
     score = np.max(scores)
 
     """Get game ID."""
@@ -52,29 +56,39 @@ def recognize(login):
     gameID = CLASS_NAMES[index]
 
     """Get game name from game ID."""
-    game = apiGameIDtoName(gameID)
-    print(game)
-    print(score)
+    game = gameIDtoName(gameID)
+
+    print(f"{game} with a score of {score}")
+    return game
 
 
 def recognizeFrame(imgPath):
     """Recognize image class."""
 
+    """Load and resize the image."""
     img = keras.preprocessing.image.load_img(
         imgPath, target_size=(IMG_HEIGHT, IMG_WIDTH)
     )
 
+    """Convert the image to an array."""
     imgArray = keras.preprocessing.image.img_to_array(img)
     imgArray = tf.expand_dims(imgArray, 0)
 
-    model = keras.models.load_model("model/model.h5")
+    """Load the model."""
+    model = keras.models.load_model(f"model{os.sep}model.h5")
 
+    """Predict the game."""
     predictions = model(imgArray)
+
+    """Calculate game score for an image."""
     score = tf.nn.softmax(predictions[0])
 
+    """Print a prediction for an image."""
     print(
-        "This image most likely belongs to {} with a {:.2f}% confidence."
-        .format(CLASS_NAMES[np.argmax(score)], 100 * np.max(score))
+        "{} most likely belongs to {} with a {:.2f}% confidence."
+        .format(imgPath,
+                gameIDtoName(CLASS_NAMES[np.argmax(score)]),
+                100 * np.max(score))
     )
 
     return predictions
