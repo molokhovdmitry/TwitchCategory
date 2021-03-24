@@ -14,6 +14,7 @@ import requests
 import re
 
 import streamlink
+from streamlink import Streamlink
 import cv2 as cv
 
 
@@ -38,7 +39,7 @@ if not os.path.exists(tempPath):
     os.mkdir(tempPath)
 
 
-def downloadFrames(login, gameID=None):
+def downloadFrames(streamlinkSession, login, gameID=None):
     """
     Download stream segments in best quality, get frames from segments,
     resize frames to required resolution and save them.
@@ -62,11 +63,7 @@ def downloadFrames(login, gameID=None):
     Get a dictionary of format {`quality`: `url`} containing 
     `.m3u8` file urls for every quality.
     """
-    try:
-        links = streamlink.streams(f"https://www.twitch.tv/{login}")
-    except:
-        print("Error. Streamlink couldn't get the stream.")
-        return None
+    links = streamlinkSession.streams(f"https://www.twitch.tv/{login}")
 
     """Get the best quality `.m3u8` url."""
     if not links:

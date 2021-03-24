@@ -7,7 +7,6 @@ Functions:
     3) Get user logins broadcasting a specified game ID.
 """
 
-from multiprocessing import Value
 import requests
 
 from config import CLIENT_ID, ACCESS_TOKEN
@@ -18,18 +17,18 @@ HEADERS = {
     'Client-Id': CLIENT_ID
 }
 
-def requestQuery(query):
+def requestQuery(session, query):
     """Make a request and return a response."""
 
     """Contact API."""
     try:
-        response = requests.get(BASE_URL + query, headers=HEADERS)
+        response = session.get(BASE_URL + query, headers=HEADERS)
         response.raise_for_status()
         return response
     except requests.RequestException:
         return None
 
-def getTopGames():
+def getTopGames(session):
     """
     Return top games dictionary of format:
     {game_id: game_name}
@@ -57,11 +56,10 @@ def getTopGames():
 
     """Make query."""
     query = f'games/top?first={first}'
-    response = requestQuery(query)
+    response = requestQuery(session, query)
     if not response:
         print("Error. No response from API. (getTopGames)")
         return None
-
     """Parse response."""
     try:
         quote = response.json()
@@ -75,7 +73,7 @@ def getTopGames():
                 continue
 
             """Ensure the game is streamed by more than 75 streamers."""
-            if len(getStreams(id)) > 90:
+            if len(getStreams(session, id)) > 90:
                 games[id] = name
         return games
     except (KeyError, TypeError, ValueError):
@@ -83,14 +81,14 @@ def getTopGames():
         return None
 
 
-def getStreams(gameID):
+def getStreams(session, gameID):
     """Return a set of user logins broadcasting a specified game ID."""
 
     """Number of objects to return (100 max)."""
     first = 100
 
     query = f"streams?game_id={gameID}&first={first}"
-    response = requestQuery(query)
+    response = requestQuery(session, query)
 
     if not response:
         print("Error. No response from API. (getStreams)")
@@ -107,11 +105,11 @@ def getStreams(gameID):
         return None
     
 
-def gameIDtoName(gameID):
+def gameIDtoName(session, gameID):
     """Converts game ID to name using the API."""
 
     query = f"games?id={gameID}"
-    response = requestQuery(query)
+    response = requestQuery(session, query)
 
     """Parse response."""
     try:

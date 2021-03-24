@@ -7,6 +7,9 @@ frames from 5 random streams.
 
 import random
 import time
+import requests
+
+from streamlink import Streamlink
 
 from data.download import downloadFrames
 from data.api import *
@@ -33,16 +36,23 @@ print("Press Enter to stop downloading.")
 downloadCountGlobal = 0
 failCount = 0
 frameCount = 0
+
+"""Start a streamlink session."""
+streamlinkSession = Streamlink()
+"""Start an api session."""
+apiSession = requests.session()
+
 while not inputList:
+
+    """Update top categories."""
+    games = getTopGames(apiSession)
+    if not games:
+        print("Error. Could not get top games.")
+        time.sleep(5)
+        continue
     
     with sessionScope() as session:
 
-        """Update top categories."""
-        games = getTopGames()
-        if not games:
-            print("Error. Could not get top games.")
-            time.sleep(5)
-            continue
         updateGames(session, games)
         updateFrameCount(session)
 
@@ -55,7 +65,7 @@ while not inputList:
     downloadAttempts = 0
 
     """Get streams from category."""
-    streams = getStreams(gameID)
+    streams = getStreams(apiSession, gameID)
     if not streams:
         print("Error. Could not get streams.")
         continue
@@ -70,7 +80,7 @@ while not inputList:
 
         """Download frames from a stream, update the database."""
         download = False
-        for framePath in downloadFrames(stream, gameID):
+        for framePath in downloadFrames(streamlinkSession, stream, gameID):
             download = True
             frameCount += 1
 
