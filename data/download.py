@@ -63,7 +63,11 @@ def downloadFrames(streamlinkSession, login, gameID=None):
     Get a dictionary of format {`quality`: `url`} containing 
     `.m3u8` file urls for every quality.
     """
-    links = streamlinkSession.streams(f"https://www.twitch.tv/{login}")
+    try:
+        links = streamlinkSession.streams(f"https://www.twitch.tv/{login}")
+    except:
+        print("Streamlink couldn't get a stream.")
+        return None
 
     """Get the best quality `.m3u8` url."""
     if not links:
