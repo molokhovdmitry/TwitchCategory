@@ -9,6 +9,8 @@ import os
 
 import tensorflow as tf
 from tensorflow import keras
+from streamlink import Streamlink
+import requests
 
 from data.download import downloadFrames, delTempFiles
 from data.api import gameIDtoName
@@ -36,11 +38,15 @@ CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
 def recognize(login):
     """Recognize stream game by frames."""
 
+    """Create streamlink and api sessions."""
+    streamlinkSession = Streamlink()
+    apiSession = requests.session()
+
     """Recognize frames."""
-    frames = list(downloadFrames(login))
+    frames = list(downloadFrames(streamlinkSession, login))
     if not frames:
         sys.exit()
-    scores = [recognizeFrame(frame) for frame in frames]
+    scores = [recognizeFrame(apiSession, frame) for frame in frames]
 
     """Delete frames."""
     delTempFiles()
@@ -56,13 +62,15 @@ def recognize(login):
     gameID = CLASS_NAMES[index]
 
     """Get game name from game ID."""
-    game = gameIDtoName(gameID)
+    game = gameIDtoName(apiSession, gameID)
 
     print(f"{game} with a score of {score}")
+    while True:
+        pass
     return game
 
 
-def recognizeFrame(imgPath):
+def recognizeFrame(apiSession, imgPath):
     """Recognize image class."""
 
     """Load and resize the image."""
@@ -87,7 +95,7 @@ def recognizeFrame(imgPath):
     print(
         "{} most likely belongs to {} with a {:.2f}% confidence."
         .format(imgPath,
-                gameIDtoName(CLASS_NAMES[np.argmax(score)]),
+                gameIDtoName(apiSession, CLASS_NAMES[np.argmax(score)]),
                 100 * np.max(score))
     )
 
