@@ -4,7 +4,8 @@ This file has functions that get data from twitch api.
 Functions:
     1) Request helper function.
     2) Get top games by amount of viewers.
-    3) Get user logins broadcasting a specified game ID.
+    3) Get user logins that broadcast a specified game ID.
+    4) Get game name from game ID.
 """
 
 import requests
@@ -58,7 +59,7 @@ def getTopGames(session):
     """Number of objects to return (100 max)."""
     first = 25
 
-    """Make query."""
+    """Make a query."""
     query = f'games/top'
     payload = {'first': first}
 
@@ -68,7 +69,7 @@ def getTopGames(session):
         print("getTopGames error. No response from API.")
         return None
 
-    """Parse response."""
+    """Parse the response."""
     try:
         quote = response.json()
         games = dict()
@@ -93,12 +94,12 @@ def getTopGames(session):
 
 
 def getStreams(session, gameID):
-    """Return a set of user logins broadcasting a specified game ID."""
+    """Return a set of user logins that broadcast a specified game ID."""
 
     """Number of objects to return (100 max)."""
     first = 100
 
-    """Make query."""
+    """Make a query."""
     query = f"streams"
     payload = {'game_id': gameID, 'first': first}
 
@@ -108,7 +109,7 @@ def getStreams(session, gameID):
         print(f"getStreams error. No response from API. Game ID: {gameID}")
         return None
     
-    """Parse response."""
+    """Parse the response."""
     try:
         quote = response.json()
         streams = set()
@@ -125,7 +126,7 @@ def getStreams(session, gameID):
 def gameIDtoName(session, gameID):
     """Converts game ID to name using the API."""
 
-    """Make query."""
+    """Make a query."""
     query = f"games"
     payload = {'id': gameID}
 
@@ -135,7 +136,7 @@ def gameIDtoName(session, gameID):
         print(f"gameIDtoName error. No response from API. Game ID: {gameID}")
         return None
 
-    """Parse response."""
+    """Parse the response."""
     try:
         quote = response.json()
         game = quote['data'][0]['name']
