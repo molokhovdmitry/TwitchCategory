@@ -17,14 +17,18 @@ HEADERS = {
     'Client-Id': CLIENT_ID
 }
 
-def requestQuery(session, query):
+def requestQuery(session, query, payload):
     """Make a request and return a response."""
 
     """Contact API."""
     try:
-        response = session.get(BASE_URL + query, headers=HEADERS)
+        response = session.get(BASE_URL + query,
+                               params=payload,
+                               headers=HEADERS)
         response.raise_for_status()
+
         return response
+
     except requests.RequestException:
         return None
 
@@ -55,29 +59,36 @@ def getTopGames(session):
     first = 25
 
     """Make query."""
-    query = f'games/top?first={first}'
-    response = requestQuery(session, query)
+    query = f'games/top'
+    payload = {'first': first}
+
+    """Make a request."""
+    response = requestQuery(session, query, payload)
     if not response:
-        print("Error. No response from API. (getTopGames)")
+        print("getTopGames error. No response from API.")
         return None
+
     """Parse response."""
     try:
         quote = response.json()
         games = dict()
         for game in quote['data']:
+            
             id = game['id']
             name = game['name']
 
-            """Ensure it's a game and it is streamed by more than 75 streamers."""
-            if id in notVideoGames or name in notVideoGames.values():
+            """Ensure it's a video game."""
+            if id in notVideoGames:
                 continue
 
-            """Ensure the game is streamed by more than 75 streamers."""
+            """Ensure the game is streamed by more than 90 streamers."""
             if len(getStreams(session, id)) > 90:
                 games[id] = name
+
         return games
+
     except (KeyError, TypeError, ValueError):
-        print("Error. Can't parse the response.")
+        print("getTopGames error. Can't parse the response.")
         return None
 
 
@@ -87,11 +98,14 @@ def getStreams(session, gameID):
     """Number of objects to return (100 max)."""
     first = 100
 
-    query = f"streams?game_id={gameID}&first={first}"
-    response = requestQuery(session, query)
+    """Make query."""
+    query = f"streams"
+    payload = {'game_id': gameID, 'first': first}
 
+    """Make a request."""
+    response = requestQuery(session, query, payload)
     if not response:
-        print("Error. No response from API. (getStreams)")
+        print(f"getStreams error. No response from API. Game ID: {gameID}")
         return None
     
     """Parse response."""
@@ -100,21 +114,34 @@ def getStreams(session, gameID):
         streams = set()
         for stream in quote['data']:
             streams.add(stream['user_login'])
+
         return streams
+
     except (KeyError, TypeError, ValueError):
+        print(f"getStreams error. Can't parse the response. Game ID: {gameID}")
         return None
     
 
 def gameIDtoName(session, gameID):
     """Converts game ID to name using the API."""
 
-    query = f"games?id={gameID}"
-    response = requestQuery(session, query)
+    """Make query."""
+    query = f"games"
+    payload = {'id': gameID}
+
+    """Make a request."""
+    response = requestQuery(session, query, payload)
+    if not response:
+        print(f"gameIDtoName error. No response from API. Game ID: {gameID}")
+        return None
 
     """Parse response."""
     try:
         quote = response.json()
         game = quote['data'][0]['name']
+
         return game
+
     except (KeyError, TypeError, ValueError):
+        print(f"gameIDtoName error. Can't parse the response. Game ID: {gameID}")
         return None
