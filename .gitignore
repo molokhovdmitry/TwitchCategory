@@ -2,10 +2,12 @@ config.py
 downloadedData/
 
 log.txt
+errors.txt
 
 dbPrint.py
 test.py
 test
+resize.py
 
 .python-version
 
