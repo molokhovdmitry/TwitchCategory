@@ -9,11 +9,9 @@ Functions:
 3) Deletes files in `temp` directory.
 """
 
-import os
 import requests
 import re
 from pathlib import Path
-import sys ###########
 
 import cv2 as cv
 
