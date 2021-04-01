@@ -61,7 +61,6 @@ def downloadFrames(streamlinkSession, login, gameID=None):
     try:
         m3u8Links = streamlinkSession.streams(f"https://www.twitch.tv/{login}")
     except:
-        print(login)
         print(f"Streamlink couldn't get {login}'s stream.")
         return None
 
@@ -126,7 +125,7 @@ def downloadFrames(streamlinkSession, login, gameID=None):
             """Delete segment."""
             segmentPath.unlink()
     
-    print("Downloaded frames.")
+    print("Frames downloaded.")
 
 
 def lastAddedNum(path):

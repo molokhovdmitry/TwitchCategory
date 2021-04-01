@@ -23,7 +23,7 @@ DATABASE = {
 }
 
 
-engine = create_engine(URL(**DATABASE), echo=True)
+engine = create_engine(URL(**DATABASE), echo=False)
 Session = sessionmaker(bind=engine)
 
 
