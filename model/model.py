@@ -19,8 +19,9 @@ session = tf.compat.v1.Session(config=config)
 
 from config import DOWNLOAD_PATH, MODEL_PATH, EPOCHS, IMG_SIZE
 DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
-MODEL_FILE = Path.joinpath(Path(MODEL_PATH), "model.h5")
-CLASS_FILE = Path.joinpath(Path(MODEL_PATH), "classes.txt")
+MODEL_PATH = Path(MODEL_PATH)
+MODEL_FILE = Path.joinpath(MODEL_PATH, "model.h5")
+CLASS_FILE = Path.joinpath(MODEL_PATH, "classes.txt")
 
 IMG_HEIGHT = IMG_SIZE["height"]
 IMG_WIDTH = IMG_SIZE["width"]
@@ -31,7 +32,10 @@ NUM_CLASSES = len(CLASS_NAMES)
 
 """Save classes in a txt file."""
 CLASS_FILE.touch()
-CLASS_FILE.write_text(str(CLASS_NAMES) + '\n')
+classes = ""
+for name in CLASS_NAMES:
+    classes += str(name) + '\n'
+CLASS_FILE.write_text(classes)
 
 
 def main():
