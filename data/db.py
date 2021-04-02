@@ -11,15 +11,15 @@ from sqlalchemy.orm import sessionmaker
 
 
 """Connect to postgres database."""
-from config import DB_USER, DB_PASSWORD
+from config import DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
 
 DATABASE = {
     'drivername': 'postgres',
-    'host': 'localhost',
-    'port': '5432',
+    'host': DB_HOST,
+    'port': DB_PORT,
     'username': DB_USER,
     'password': DB_PASSWORD,
-    'database': 'TwitchCategory'
+    'database': DB_NAME
 }
 
 
