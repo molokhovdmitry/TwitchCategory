@@ -16,16 +16,9 @@ from data.download import downloadFrames, delTempFiles
 from data.api import gameIDtoName
 from data.dbFuncs import gameIDtoName as dbGameIDtoName, sessionScope
 
-"""
-GPU support fix.
-https://github.com/tensorflow/tensorflow/issues/24828#issuecomment-464910864
-"""
-config = tf.compat.v1.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.compat.v1.Session(config=config)
+from config import MODEL_PATH, IMG_SIZE
 
-from config import DOWNLOAD_PATH, MODEL_PATH, IMG_SIZE
-DATA_PATH = DOWNLOAD_PATH + "frames"
+
 MODEL_PATH = Path(MODEL_PATH)
 MODEL_FILE = Path.joinpath(MODEL_PATH, "model.h5")
 CLASS_FILE = Path.joinpath(MODEL_PATH, "classes.txt")
@@ -38,6 +31,15 @@ CLASS_NAMES = []
 with CLASS_FILE.open() as f:
     for line in f.readlines():
         CLASS_NAMES.append(int(line))
+
+
+"""
+GPU support fix.
+https://github.com/tensorflow/tensorflow/issues/24828#issuecomment-464910864
+"""
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.Session(config=config)
 
 
 def recognize(login):

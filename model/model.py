@@ -9,15 +9,9 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-"""
-GPU support fix.
-https://github.com/tensorflow/tensorflow/issues/24828#issuecomment-464910864
-"""
-config = tf.compat.v1.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.compat.v1.Session(config=config)
-
 from config import DOWNLOAD_PATH, MODEL_PATH, EPOCHS, IMG_SIZE
+
+
 DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 MODEL_PATH = Path(MODEL_PATH)
 MODEL_FILE = Path.joinpath(MODEL_PATH, "model.h5")
@@ -36,6 +30,15 @@ classes = ""
 for name in CLASS_NAMES:
     classes += str(name) + '\n'
 CLASS_FILE.write_text(classes)
+
+
+"""
+GPU support fix.
+https://github.com/tensorflow/tensorflow/issues/24828#issuecomment-464910864
+"""
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.Session(config=config)
 
 
 def main():

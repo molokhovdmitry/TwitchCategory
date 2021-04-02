@@ -117,6 +117,7 @@ while not inputList:
             """Save the frame in the database."""
             with sessionScope() as session:
                 addFrame(session, framePath, gameID, stream)
+                print(f"{framePath} saved.")
 
             download = True
             frameCount += 1
