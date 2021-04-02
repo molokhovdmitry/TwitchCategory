@@ -5,7 +5,7 @@ and predicts the game.
 
 import sys
 import numpy as np
-import os
+from pathlib import Path
 
 import tensorflow as tf
 from tensorflow import keras
@@ -24,15 +24,20 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
-
-from config import DOWNLOAD_PATH
+from config import DOWNLOAD_PATH, MODEL_PATH, IMG_SIZE
 DATA_PATH = DOWNLOAD_PATH + "frames"
-IMG_HEIGHT = 180
-IMG_WIDTH = 180
+MODEL_PATH = Path(MODEL_PATH)
+MODEL_FILE = Path.joinpath(MODEL_PATH, "model.h5")
+CLASS_FILE = Path.joinpath(MODEL_PATH, "classes.txt")
+
+IMG_HEIGHT = IMG_SIZE["height"]
+IMG_WIDTH = IMG_SIZE["width"]
 
 """Get all classes."""
-import pathlib
-CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
+CLASS_NAMES = []
+with CLASS_FILE.open() as f:
+    for line in f.readlines():
+        CLASS_NAMES.append(int(line))
 
 
 def recognize(login):
@@ -41,21 +46,25 @@ def recognize(login):
     """Create streamlink and api sessions."""
     streamlinkSession = Streamlink()
     apiSession = requests.session()
+    
+    """Load the model."""
+    model = keras.models.load_model(str(MODEL_FILE))
 
     """Recognize frames."""
     frames = list(downloadFrames(streamlinkSession, login))
     if not frames:
-        sys.exit()
-    scores = [recognizeFrame(apiSession, frame) for frame in frames]
+        print("Couldn't download stream frames.")
+        return None
+    scores = [recognizeFrame(apiSession, model, frame) for frame in frames]
 
-    """Delete frames."""
+    """Delete downloaded frames."""
     delTempFiles()
 
     """Add tensors."""
     scores = np.add.reduce(scores)[0]
 
     """Calculate score for a stream."""
-    score = np.max(scores)
+    score = np.max(scores) / len(frames)
 
     """Get game ID."""
     index = np.argmax(scores)
@@ -64,13 +73,12 @@ def recognize(login):
     """Get game name from game ID."""
     game = gameIDtoName(apiSession, gameID)
 
-    print(f"{game} with a score of {score}")
-    while True:
-        pass
-    return game
+    print("{} with a score of {:.1f}".format(game, score))
+
+    return game, score
 
 
-def recognizeFrame(apiSession, imgPath):
+def recognizeFrame(apiSession, model, imgPath):
     """Recognize image class."""
 
     """Load and resize the image."""
@@ -82,9 +90,6 @@ def recognizeFrame(apiSession, imgPath):
     imgArray = keras.preprocessing.image.img_to_array(img)
     imgArray = tf.expand_dims(imgArray, 0)
 
-    """Load the model."""
-    model = keras.models.load_model(f"model{os.sep}model.h5")
-
     """Predict the game."""
     predictions = model(imgArray)
 
@@ -93,9 +98,8 @@ def recognizeFrame(apiSession, imgPath):
 
     """Print a prediction for an image."""
     print(
-        "{} most likely belongs to {} with a {:.2f}% confidence."
-        .format(imgPath,
-                gameIDtoName(apiSession, CLASS_NAMES[np.argmax(score)]),
+        "{} with a {:.2f}% confidence."
+        .format(gameIDtoName(apiSession, CLASS_NAMES[np.argmax(score)]),
                 100 * np.max(score))
     )
 
