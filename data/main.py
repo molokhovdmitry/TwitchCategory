@@ -28,7 +28,7 @@ from config import DOWNLOAD_PATH
 DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
 
-def main():
+def updateData():
     """Update data while no input (Enter not pressed)."""
 
     """Start helper threads."""
@@ -43,7 +43,7 @@ def main():
     """Start an api session."""
     apiSession = requests.session()
 
-    downloadCountGlobal = 0
+    downloadedStreams = 0
     failCount = 0
     frameCount = 0
     while not inputList:
@@ -55,14 +55,14 @@ def main():
             continue
         
         """Start a database session."""
-        with sessionScope() as session:
+        with sessionScope() as dbSession:
 
             """Update the database."""
-            updateGames(session, games)
-            updateFrameCount(session)
+            updateGames(dbSession, games)
+            updateFrameCount(dbSession)
 
             """Get a category with the least data."""
-            gameID = minDataCategory(session)
+            gameID = minDataCategory(dbSession)
 
         """Get streams from the category."""
         streams = getStreams(apiSession, gameID)
@@ -75,6 +75,9 @@ def main():
         downloadAttempts = 0
         while streams and downloadCount < 5 and downloadAttempts < 10:
 
+            if inputList:
+                break
+
             """Get a random stream."""
             stream = random.choice(list(streams))
             streams.discard(stream)
@@ -86,8 +89,8 @@ def main():
             for framePath in downloadFrames(streamlinkSession, stream, gameID):
 
                 """Save a frame in the database."""
-                with sessionScope() as session:
-                    addFrame(session, framePath, gameID, stream)
+                with sessionScope() as dbSession:
+                    addFrame(dbSession, framePath, gameID, stream)
                     print(f"{framePath} saved.")
 
                 download = True
@@ -96,16 +99,16 @@ def main():
             downloadCount += download
             downloadAttempts += 1
 
-            downloadCountGlobal += download
+            downloadedStreams += download
             failCount += not download
                 
 
     """Update the database."""
-    with sessionScope() as session:
-        updateFrameCount(session)
+    with sessionScope() as dbSession:
+        updateFrameCount(dbSession)
 
     print("Done.")
-    print(f"Downloaded {frameCount} frames from {downloadCountGlobal} stream(s)." + \
+    print(f"Downloaded {frameCount} frame(s) from {downloadedStreams} stream(s)." + \
         f" Failed {failCount} time(s).")
 
 
@@ -120,7 +123,7 @@ def inputThread(inputList):
 def sizeThread(inputList):
     """Thread that shows how much data is downloaded every 120 seconds."""
 
-    print(colored(size(DATA_PATH), 'green'))
+    print(colored(dirSize(DATA_PATH), 'green'))
     n = 0
     while not inputList:
         if n != 120:
@@ -129,10 +132,10 @@ def sizeThread(inputList):
             continue
         n = 0
 
-        print(colored(size(DATA_PATH), 'green'))
+        print(colored(dirSize(DATA_PATH), 'green'))
 
 
-def size(path):
+def dirSize(path):
     """Return the size of `path` folder."""
 
     files = list(path.glob('**/*'))
@@ -148,4 +151,4 @@ def size(path):
 
 
 if __name__ == "__main__":
-    main()
+    updateData()
