@@ -2,7 +2,7 @@
 This file creates the model.
 """
 
-import pathlib
+from pathlib import Path
 import matplotlib.pyplot as plt
 
 import tensorflow as tf
@@ -17,32 +17,38 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
-from config import DOWNLOAD_PATH
-DATA_PATH = DOWNLOAD_PATH + "frames"
-EPOCHS = 10
-IMG_HEIGHT = 240
-IMG_WIDTH = 240
+from config import DOWNLOAD_PATH, MODEL_PATH, EPOCHS, IMG_SIZE
+DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
+MODEL_FILE = Path.joinpath(Path(MODEL_PATH), "model.h5")
+CLASS_FILE = Path.joinpath(Path(MODEL_PATH), "classes.txt")
+
+IMG_HEIGHT = IMG_SIZE["height"]
+IMG_WIDTH = IMG_SIZE["width"]
 
 """Get all classes."""
-CLASS_NAMES = [category.name for category in pathlib.Path(DATA_PATH).iterdir()]
+CLASS_NAMES = [category.name for category in DATA_PATH.iterdir()]
 NUM_CLASSES = len(CLASS_NAMES)
+
+"""Save classes in a txt file."""
+CLASS_FILE.touch()
+CLASS_FILE.write_text(str(CLASS_NAMES) + '\n')
 
 
 def main():
     """Create a model."""
 
     """Load the data."""
-    trainData, valData = loadData(DATA_PATH)
+    trainData, valData = loadData(str(DATA_PATH))
 
     """Create and compile the model."""
     model = getModel()
-    #model.summary()
+    model.summary()
 
     """Fit the model and save the history."""
     history = model.fit(trainData, validation_data=valData, epochs=EPOCHS)
 
     """Save the model to a file."""
-    model.save("model/model3.h5")
+    model.save(str(MODEL_FILE))
     print("Model saved.")
 
     """Make loss and accuracy plots on the training and validation sets."""
@@ -73,7 +79,6 @@ def loadData(data_dir):
     )
 
     """Configure the dataset for performance."""
-    AUTOTUNE = tf.data.AUTOTUNE
     train_ds = train_ds.shuffle(250).prefetch(buffer_size=1)
     val_ds = val_ds.prefetch(buffer_size=1)
 
