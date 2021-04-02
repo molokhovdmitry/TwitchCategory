@@ -112,7 +112,7 @@ def downloadFrames(streamlinkSession, login, gameID=None):
             frameNumber += 1
             
             if gameID:
-                """Yield path for saving in the database."""
+                """Yield path to save it in the database."""
                 yield  str(Path.joinpath(Path(str(gameID)), framePath.name))
             else:
                 """Yield path for recognition."""
