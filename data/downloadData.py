@@ -1,4 +1,28 @@
 """
+MIT License
+
+Copyright (c) 2021 molokhovdmitry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
+"""
 This file downloads frames from streams in top categories of twitch.
 
 Pseudocode:
@@ -20,7 +44,7 @@ from termcolor import colored
 
 from streamlink import Streamlink
 
-from data.download import downloadFrames
+from data.downloadFuncs import downloadFrames
 from data.api import *
 from data.dbFuncs import *
 
@@ -91,7 +115,6 @@ def updateData():
                 """Save a frame in the database."""
                 with sessionScope() as dbSession:
                     addFrame(dbSession, framePath, gameID, stream)
-                    print(f"{framePath} saved.")
 
                 download = True
                 frameCount += 1
@@ -121,16 +144,18 @@ def inputThread(inputList):
 
 
 def sizeThread(inputList):
-    """Thread that shows how much data is downloaded every 120 seconds."""
+    """Thread that shows how much data is downloaded every `n` seconds."""
+
+    n = 300
 
     print(colored(dirSize(DATA_PATH), 'green'))
-    n = 0
+    i = 0
     while not inputList:
-        if n != 120:
+        if i != n:
             time.sleep(1)
-            n += 1
+            i += 1
             continue
-        n = 0
+        i = 0
 
         print(colored(dirSize(DATA_PATH), 'green'))
 
