@@ -33,13 +33,18 @@ Functions:
     4) Find a category (game ID) with minimum amount of frames.
     5) Add frame information to `frames` table.
     6) Get game name from game ID. (not used)
+    7) Delete frames from `frames` table that are were from the downloaded data.
 """
 
 from contextlib import contextmanager
+from pathlib import Path
 
 from data.db import Session
 from data.db import Game, Frame
 
+from config import DOWNLOAD_PATH
+
+DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
 @contextmanager
 def sessionScope():
@@ -112,3 +117,26 @@ def gameIDtoName(session, gameID):
     """Converts game ID to name."""
 
     return session.query(Game.name).filter_by(id=gameID).first()[0]
+
+
+def syncDB(session):
+    """
+    Delete frames from `frames` table that are were from the downloaded data.
+
+    Used for updating the database after data cleaning.
+    """
+
+    dataPath = DATA_PATH
+    categories = list(p.name for p in dataPath.glob('*'))
+
+    """Get downloaded frames."""
+    frames = dict()
+    for category in categories:
+        catPath = Path.joinpath(dataPath, category)
+        catFrames = [p.name for p in catPath.glob('*')]
+        frames[category] = catFrames
+
+    """Delete frames from the database."""
+    for frame in session.query(Frame).all():
+        if Path(frame.path).name not in frames[str(frame.game_id)]:
+            session.delete(frame)

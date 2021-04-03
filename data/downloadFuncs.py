@@ -143,7 +143,7 @@ def downloadFrames(streamlinkSession, login, gameID=None):
                 yield str(framePath)
 
         except:
-            print("Error. Couldn't get a frame from segment.")
+            print("^^ That's normal. ^^")
 
         finally:
             """Delete segment."""
