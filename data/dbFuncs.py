@@ -30,10 +30,14 @@ Functions:
     1) Session context manager.
     2) Update `games` table with new games.
     3) Update `frames` (frame count) for every game in `games` table.
-    4) Find a category (game ID) with minimum amount of frames.
-    5) Add frame information to `frames` table.
-    6) Get game name from game ID. (not used)
-    7) Delete frames from `frames` table that are were from the downloaded data.
+    4) Find a category (game ID) with minimum number of frames.
+    5) Get game ID and frame count for a category with a minimum
+    number of frames.
+    6) Get game ID and frame count for a category with a maximum
+    number of frames.
+    7) Add frame information to `frames` table.
+    8) Get game name from game ID. (not used)
+    9) Delete frames from `frames` table that are were from the downloaded data.
 """
 
 from contextlib import contextmanager
@@ -92,18 +96,36 @@ def updateFrameCount(session):
     """Get all games."""
     for game in session.query(Game).all():
 
-        """Get game frame amount."""
+        """Get game frame number."""
         frames = session.query(Frame).filter_by(game_id=game.id).count()
 
         """Update game `frames`."""
         session.query(Game).filter_by(id=game.id).\
-            update({Game.frames: frames}, synchronize_session=False)
+                update({Game.frames: frames}, synchronize_session=False)
 
 
 def minDataCategory(session):
-    """Find a category (game ID) with a minimum amount of frames."""
+    """
+    Return game ID and frame count for a category with a minimum
+    number of frames.
+    """
 
-    return session.query(Game.id).order_by(Game.frames).first()[0]
+    gameID, frameCount = session.query(Game.id, Game.frames).\
+                                 order_by(Game.frames).first()
+
+    return gameID, frameCount
+
+
+def maxDataCategory(session):
+    """
+    Return game ID and frame count for a category with a maximum
+    number of frames.
+    """
+
+    gameID, frameCount = session.query(Game.id, Game.frames).\
+                                 order_by(Game.frames.desc()).first()
+
+    return gameID, frameCount
 
 
 def addFrame(session, path, gameID, login):
@@ -121,7 +143,7 @@ def gameIDtoName(session, gameID):
 
 def syncDB(session):
     """
-    Delete frames from `frames` table that are were from the downloaded data.
+    Delete frames from `frames` table that were deleted from the downloaded data.
 
     Used for updating the database after data cleaning.
     """

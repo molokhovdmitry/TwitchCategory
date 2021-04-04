@@ -29,7 +29,7 @@ Pseudocode:
     while `Enter` is not pressed:
         Loop:
         1) Get top games from twitch api, save them in a database.
-        2) Get a game with the least amount of saved frames.
+        2) Get a game with a minimum number of saved frames.
         3) Get logins of streams that are live in that category.
         4) Download frames from 5 random streams,
         save frame info in the database.
@@ -85,8 +85,8 @@ def updateData():
             updateGames(dbSession, games)
             updateFrameCount(dbSession)
 
-            """Get a category with the least data."""
-            gameID = minDataCategory(dbSession)
+            """Get a category with a minimum number of frames."""
+            gameID = minDataCategory(dbSession)[0]
 
         """Get streams from the category."""
         streams = getStreams(apiSession, gameID)
@@ -148,7 +148,13 @@ def sizeThread(inputList):
 
     n = 300
 
+    """Print data size."""
     print(colored(dirSize(DATA_PATH), 'green'))
+
+    """Print categories with minumum and maximum number of frames."""
+    printMinMax()
+
+    """Repeat every `n` seconds."""
     i = 0
     while not inputList:
         if i != n:
@@ -158,6 +164,7 @@ def sizeThread(inputList):
         i = 0
 
         print(colored(dirSize(DATA_PATH), 'green'))
+        printMinMax()
 
 
 def dirSize(path):
@@ -173,6 +180,21 @@ def dirSize(path):
     size = size / 1073741824
     
     return "Data size: " + '{:.2f}'.format(size) + " GB"
+
+
+def printMinMax():
+    """Print categories with minumum and maximum number of frames."""
+
+    with sessionScope() as dbSession:
+        minCategory = minDataCategory(dbSession)
+        maxCategory = maxDataCategory(dbSession)
+
+    print(colored("Minimum: {} frames in category {}."
+                    .format(minCategory[1], minCategory[0]),
+                    'green'))
+    print(colored("Maximum: {} frames in category {}."
+                    .format(maxCategory[1], maxCategory[0]),
+                    'green'))
 
 
 if __name__ == "__main__":
