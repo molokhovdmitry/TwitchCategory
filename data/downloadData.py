@@ -58,7 +58,7 @@ def updateData():
     """Start helper threads."""
     inputList = []
     Thread(target=inputThread, args=(inputList, )).start()
-    Thread(target=sizeThread, args=(inputList, )).start()
+    Thread(target=infoThread, args=(inputList, )).start()
     print("Press Enter any time to stop downloading.")
 
     """Start a streamlink session."""
