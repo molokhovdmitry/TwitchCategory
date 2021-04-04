@@ -144,9 +144,12 @@ def inputThread(inputList):
 
 
 def sizeThread(inputList):
-    """Thread that shows how much data is downloaded every `n` seconds."""
+    """
+    Thread that shows how much data is downloaded and min/max data categories
+    every `n` seconds.
+    """
 
-    n = 300
+    n = 1200
 
     """Print data size."""
     print(colored(dirSize(DATA_PATH), 'green'))
