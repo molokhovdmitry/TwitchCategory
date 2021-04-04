@@ -27,7 +27,7 @@ This file updates the database after data cleaning (frames only).
 """
 
 from data.db import Frame
-from data.dbFuncs import syncDB, sessionScope
+from data.dbFuncs import syncDB, updateFrameCount, sessionScope
 
 def sync():
     """
@@ -37,6 +37,7 @@ def sync():
     with sessionScope() as session:
         before = len(session.query(Frame).all())
         syncDB(session)
+        updateFrameCount(session)
         after = len(session.query(Frame).all())
         deleted = before - after
 

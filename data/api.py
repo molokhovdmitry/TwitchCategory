@@ -81,7 +81,7 @@ def getTopGames(session):
     }
     
     """Number of objects to return (100 max)."""
-    first = 25
+    first = 45
 
     """Make a query."""
     query = f'games/top'
