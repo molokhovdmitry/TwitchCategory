@@ -143,7 +143,7 @@ def inputThread(inputList):
     print(colored("Interrupting. Please wait.", 'green'))
 
 
-def sizeThread(inputList):
+def infoThread(inputList):
     """
     Thread that shows how much data is downloaded and min/max data categories
     every `n` seconds.
