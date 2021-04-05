@@ -129,6 +129,9 @@ def updateData():
     """Update the database."""
     with sessionScope() as dbSession:
         updateFrameCount(dbSession)
+    
+    print(colored(dirSize(DATA_PATH), 'green'))
+    printMinMax()
 
     print("Done.")
     print(f"Downloaded {frameCount} frame(s) from {downloadedStreams} stream(s)." + \
@@ -149,7 +152,7 @@ def infoThread(inputList):
     every `n` seconds.
     """
 
-    n = 1200
+    n = 300
 
     """Print data size."""
     print(colored(dirSize(DATA_PATH), 'green'))
@@ -189,6 +192,7 @@ def printMinMax():
     """Print categories with minumum and maximum number of frames."""
 
     with sessionScope() as dbSession:
+        updateFrameCount(dbSession)
         minCategory = minDataCategory(dbSession)
         maxCategory = maxDataCategory(dbSession)
 
