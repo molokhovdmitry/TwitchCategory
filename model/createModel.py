@@ -23,7 +23,7 @@ SOFTWARE.
 """
 
 """
-This file creates the model.
+This file creates the model (model.h5) and class (classes.txt) files.
 """
 
 from pathlib import Path
