@@ -23,25 +23,37 @@ SOFTWARE.
 """
 
 """
-This file updates the database after data cleaning (frames only).
+This file updates the database after data cleaning.
 """
 
-from data.db import Frame
+from data.db import Game, Frame
 from data.dbFuncs import syncDB, updateFrameCount, sessionScope
 
 def sync():
     """
-    Delete frames from the database and print the number of deleted frames.
+    Deletes categories from `games` table and frames from `frames` table that
+    were deleted from the downloaded data and prints the number of deleted
+    categories and frames.
     """
 
     with sessionScope() as session:
-        before = len(session.query(Frame).all())
+
+        gamesBefore = len(session.query(Game).all())
+        framesBefore = len(session.query(Frame).all())
+
+        """Update the database."""
         syncDB(session)
         updateFrameCount(session)
-        after = len(session.query(Frame).all())
-        deleted = before - after
 
-    print(f"Deleted {deleted} frames from the database.")
+        gamesAfter = len(session.query(Game).all())
+        framesAfter = len(session.query(Frame).all())
+
+        deletedGames = gamesBefore - gamesAfter
+        deletedFrames = framesBefore - framesAfter
+        
+        
+    print(f"Deleted {deletedGames} games and {deletedFrames} frames " +
+           "from the database.")
 
 
 if __name__ == "__main__":
