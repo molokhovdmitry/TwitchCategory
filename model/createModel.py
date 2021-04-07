@@ -66,7 +66,7 @@ session = tf.compat.v1.Session(config=config)
 
 
 def main():
-    """Create a model."""
+    """Creates a model."""
 
     """Load the data."""
     trainData, valData = loadData(str(DATA_PATH))
@@ -87,7 +87,7 @@ def main():
 
 
 def loadData(data_dir):
-    """Load the data. Return tuple (`train_ds`, `val_ds`)."""
+    """Loads the data. Returns tuple (`train_ds`, `val_ds`)."""
 
     """Training data."""
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
@@ -117,7 +117,7 @@ def loadData(data_dir):
 
 
 def getModel():
-    """Create and compile neural network."""
+    """Creates and compiles neural network."""
 
     model = Sequential([
         layers.experimental.preprocessing.Rescaling(1./255, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
@@ -145,7 +145,7 @@ def getModel():
 
 
 def makePlots(history, epochs):
-    """Visualize training results."""
+    """Visualizes training results."""
 
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']

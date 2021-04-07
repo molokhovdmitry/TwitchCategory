@@ -43,7 +43,7 @@ HEADERS = {
 }
 
 def requestQuery(session, query, payload):
-    """Make a request and return a response."""
+    """Makes a request and returns a response."""
 
     """Contact API."""
     try:
@@ -59,10 +59,11 @@ def requestQuery(session, query, payload):
 
 def getTopGames(session):
     """
-    Return top games dictionary of format:
+    Returns top games dictionary of format:
     {game_id: game_name}
     """
 
+    """Ignore these categories:"""
     notVideoGames = {
         "509658": "Just Chatting",
         "26936": "Music",
@@ -81,7 +82,7 @@ def getTopGames(session):
     }
     
     """Number of objects to return (100 max)."""
-    first = 45
+    first = 25
 
     """Make a query."""
     query = f'games/top'
@@ -118,7 +119,7 @@ def getTopGames(session):
 
 
 def getStreams(session, gameID):
-    """Return a set of user logins that broadcast a specified game ID."""
+    """Returns a set of user logins that broadcast a specified game ID."""
 
     """Number of objects to return (100 max)."""
     first = 100

@@ -67,7 +67,7 @@ session = tf.compat.v1.Session(config=config)
 
 
 def recognize(login):
-    """Recognize stream game by frames."""
+    """Recognizes livestream category."""
 
     """Create streamlink and api sessions."""
     streamlinkSession = Streamlink()
@@ -105,7 +105,7 @@ def recognize(login):
 
 
 def recognizeFrame(apiSession, model, imgPath):
-    """Recognize image class."""
+    """Recognizes image class."""
 
     """Load and resize the image."""
     img = keras.preprocessing.image.load_img(
