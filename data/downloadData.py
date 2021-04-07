@@ -53,7 +53,7 @@ DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
 
 def updateData():
-    """Update data while no input (Enter not pressed)."""
+    """Updates data while no input (Enter not pressed)."""
 
     """Start helper threads."""
     inputList = []
@@ -91,7 +91,8 @@ def updateData():
         """Get streams from the category."""
         streams = getStreams(apiSession, gameID)
         if not streams:
-            print("Error. Could not get streams.")
+            print("Error. Could not get streams. Creating a new api session.")
+            apiSession = requests.session()
             continue
 
         """Update the category (download frames 5 times)."""
@@ -105,7 +106,6 @@ def updateData():
             """Get a random stream."""
             stream = random.choice(list(streams))
             streams.discard(stream)
-
 
             """Download frames from a stream, update the database."""
             print(f"Downloading frames from '{stream}', gameID: {gameID}.")
@@ -174,7 +174,7 @@ def infoThread(inputList):
 
 
 def dirSize(path):
-    """Return the size of `path` folder."""
+    """Returns the size of `path` folder."""
 
     files = list(path.glob('**/*'))
     size = 0
@@ -189,19 +189,21 @@ def dirSize(path):
 
 
 def printMinMax():
-    """Print categories with minumum and maximum number of frames."""
+    """Prints categories with minumum and maximum number of frames."""
 
     with sessionScope() as dbSession:
         updateFrameCount(dbSession)
+        
         minCategory = minDataCategory(dbSession)
         maxCategory = maxDataCategory(dbSession)
 
-    print(colored("Minimum: {} frames in category {}."
-                    .format(minCategory[1], minCategory[0]),
-                    'green'))
-    print(colored("Maximum: {} frames in category {}."
-                    .format(maxCategory[1], maxCategory[0]),
-                    'green'))
+    if minCategory:
+        print(colored("Minimum: {} frames in category {}."
+                        .format(minCategory[1], minCategory[0]),
+                        'green'))
+        print(colored("Maximum: {} frames in category {}."
+                        .format(maxCategory[1], maxCategory[0]),
+                        'green'))
 
 
 if __name__ == "__main__":
