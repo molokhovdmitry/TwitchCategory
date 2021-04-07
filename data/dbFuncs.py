@@ -53,7 +53,7 @@ DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 @contextmanager
 def sessionScope():
     """
-    Provide a transactional scope around a series of operations.
+    Provides a transactional scope around a series of operations.
     
     This context manager constructs a session, commits transactions and
     closes the session.    
@@ -73,7 +73,7 @@ def sessionScope():
 
 def updateGames(session, games):
     """
-    Update `games` table with `games` dictionary of format:
+    Updates `games` table with `games` dictionary of format:
     {game_id: game_name}
     """
 
@@ -91,7 +91,7 @@ def updateGames(session, games):
 
 
 def updateFrameCount(session):
-    """Update `frames` (frame count) for every game in `games` table."""
+    """Updates `frames` (frame count) for every game in `games` table."""
 
     """Get all games."""
     for game in session.query(Game).all():
@@ -106,30 +106,40 @@ def updateFrameCount(session):
 
 def minDataCategory(session):
     """
-    Return game ID and frame count for a category with a minimum
+    Returns game ID and frame count for a category with a minimum
     number of frames.
     """
 
-    gameID, frameCount = session.query(Game.id, Game.frames).\
-                                 order_by(Game.frames).first()
+    """Ensure the table is not empty."""
+    if session.query(Game).all():
+        """Get game ID and frame count."""
+        gameID, frameCount = session.query(Game.id, Game.frames).\
+                                     order_by(Game.frames).first()
+    else:
+        return None
 
     return gameID, frameCount
 
 
 def maxDataCategory(session):
     """
-    Return game ID and frame count for a category with a maximum
+    Returns game ID and frame count for a category with a maximum
     number of frames.
     """
 
-    gameID, frameCount = session.query(Game.id, Game.frames).\
-                                 order_by(Game.frames.desc()).first()
+    """Ensure the table is not empty."""
+    if session.query(Game).all():
+        """Get game ID and frame count."""
+        gameID, frameCount = session.query(Game.id, Game.frames).\
+                                     order_by(Game.frames.desc()).first()
+    else:
+        return None
 
     return gameID, frameCount
 
 
 def addFrame(session, path, gameID, login):
-    """Add frame information to `frames` table."""
+    """Adds frame information to `frames` table."""
 
     frame = Frame(path=path, game_id=gameID, user_login=login)
     session.add(frame)
@@ -143,7 +153,10 @@ def gameIDtoName(session, gameID):
 
 def syncDB(session):
     """
-    Delete frames from `frames` table that were deleted from the downloaded data.
+    Deletes categories from `games` table and frames from `frames` table that
+    were deleted from the downloaded data.
+    
+    Also deletes categories, frames for which weren't downloaded yet.
 
     Used for updating the database after data cleaning.
     """
@@ -157,8 +170,20 @@ def syncDB(session):
         catPath = Path.joinpath(dataPath, category)
         catFrames = [p.name for p in catPath.glob('*')]
         frames[category] = catFrames
+    
+    """Delete removed categories from the database."""
+    for game in session.query(Game).all():
 
-    """Delete frames from the database."""
+        if game.id not in list(map(int, categories)):
+
+            """Delete all frames in that category."""
+            for frame in session.query(Frame).filter_by(game_id=game.id).all():
+                session.delete(frame)
+
+            """Delete category from `games` table."""
+            session.delete(game)
+
+    """Delete removed frames from the database."""
     for frame in session.query(Frame).all():
         if Path(frame.path).name not in frames[str(frame.game_id)]:
             session.delete(frame)
