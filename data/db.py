@@ -29,14 +29,19 @@ Made with:
 https://docs.sqlalchemy.org/en/13/orm/tutorial.html#object-relational-tutorial
 """
 
-from sqlalchemy import create_engine
+from datetime import datetime
+
+from sqlalchemy import (create_engine,
+                        ForeignKey,
+                        Column, Integer, String, DateTime)
 from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+from config import DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
 
 
 """Connect to postgres database."""
-from config import DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
-
 DATABASE = {
     'drivername': 'postgres',
     'host': DB_HOST,
@@ -46,20 +51,12 @@ DATABASE = {
     'database': DB_NAME
 }
 
-
 engine = create_engine(URL(**DATABASE), echo=False)
 Session = sessionmaker(bind=engine)
 
 
 """Create schema."""
-from sqlalchemy.ext.declarative import declarative_base
-
 Base = declarative_base()
-
-from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, String, DateTime
-
-from datetime import datetime
 
 class Game(Base):
     __tablename__ = "games"
