@@ -68,6 +68,31 @@ the sum of the output tensors.
 
 ## Installation
 
-## How to use
+### Clone the repository and install the requirements:
+```
+git clone https://github.com/molokhovdmitry/TwitchCategory
+cd TwitchCategory
+pip install -r requirements.txt
+```
+### Setup the application by filling **config.py**
 
-## Example
+## How to use
+### Data
+Create and download the dataset with:
+```
+python -m data.download
+```
+To stop the downloading process press *Enter* in the terminal.
+
+### Model
+Train a model with the downloaded data with:
+```
+python -m model.create
+```
+This will create **model.h5** and **classes.txt** files.
+
+### Recognition
+Recognize stream category with:
+```
+python -m recognition.recognize login
+```
