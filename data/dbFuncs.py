@@ -46,7 +46,7 @@ from pathlib import Path
 from data.db import Session
 from data.db import Game, Frame
 
-from config import DOWNLOAD_PATH
+from config import DOWNLOAD_PATH, MAX_GAMES
 
 DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
@@ -77,17 +77,31 @@ def updateGames(session, games):
     {game_id: game_name}
     """
 
+    gameCount = getGameCount(session)
+
     for game in games:
         
         id = game
         name = games[game]
 
-        """Check if the game already exists in the database."""
-        if not session.query(Game).filter_by(id=id).all():
+        """
+        Check if the game already exists in the database and game limit
+        is not exceeded.
+        """
+        if not session.query(Game).filter_by(id=id).all() and\
+            gameCount < MAX_GAMES:
 
             """Insert the game in the table."""
             game = Game(id=id, name=name, frames=0)
             session.add(game)
+
+            gameCount += 1
+
+
+def getGameCount(session):
+    """Returns the number of games in the `games` table."""
+
+    return len(session.query(Game).all())
 
 
 def updateFrameCount(session):
@@ -100,8 +114,8 @@ def updateFrameCount(session):
         frames = session.query(Frame).filter_by(game_id=game.id).count()
 
         """Update game `frames`."""
-        session.query(Game).filter_by(id=game.id).\
-                update({Game.frames: frames}, synchronize_session=False)
+        game = session.query(Game).filter_by(id=game.id).one()
+        game.frames = frames
 
 
 def minDataCategory(session):
@@ -139,16 +153,24 @@ def maxDataCategory(session):
 
 
 def addFrame(session, path, gameID, login):
-    """Adds frame information to `frames` table."""
+    """
+    Adds frame information to `frames` table, updates `frames` column
+    in `games` table.
+    """
 
+    """Update `frames` table."""
     frame = Frame(path=path, game_id=gameID, user_login=login)
     session.add(frame)
+
+    """Update `games` table."""
+    game = session.query(Game).filter_by(id=gameID).one()
+    game.frames += 1
 
 
 def gameIDtoName(session, gameID):
     """Converts game ID to name."""
 
-    return session.query(Game.name).filter_by(id=gameID).first()[0]
+    return session.query(Game.name).filter_by(id=gameID).one()[0]
 
 
 def syncDB(session):
