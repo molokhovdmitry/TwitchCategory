@@ -52,7 +52,7 @@ def sync():
         deletedFrames = framesBefore - framesAfter
         
         
-    print(f"Deleted {deletedGames} games and {deletedFrames} frames " +
+    print(f"Deleted {deletedGames} game(s) and {deletedFrames} frame(s) " +
            "from the database.")
 
 
