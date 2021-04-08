@@ -49,6 +49,8 @@ downloadPath = Path(DOWNLOAD_PATH)
 framesPath = Path.joinpath(downloadPath, "frames")
 tempPath = Path.joinpath(downloadPath, "temp")
 
+debugPath = Path.joinpath(downloadPath, "debug")
+
 """Ensure paths exist."""
 if not Path.exists(downloadPath):
     Path.mkdir(downloadPath)
@@ -56,12 +58,14 @@ if not Path.exists(framesPath):
     Path.mkdir(framesPath)
 if not Path.exists(tempPath):
     Path.mkdir(tempPath)
+if not Path.exists(debugPath):
+    Path.mkdir(debugPath)
 
 
 def downloadFrames(streamlinkSession, login, gameID=None):
     """
-    Download stream segments in best quality, get frames from segments,
-    resize frames to required resolution and save them.
+    Downloads stream segments in best quality, gets frames from segments,
+    resizes frames to required resolution and saves them.
     
     Saves in `framesPath`/`gameID` folder if `gameID` is passed,
     else saves in `framesPath`/`temp`.
@@ -112,6 +116,7 @@ def downloadFrames(streamlinkSession, login, gameID=None):
     for link, i in zip(segLinks, range(1, len(segLinks) + 1)):
 
         """Request `.ts` file."""
+        # Check request
         segment = requests.get(link).content
 
         """Save the file."""
@@ -119,14 +124,14 @@ def downloadFrames(streamlinkSession, login, gameID=None):
         with open(segmentPath, 'wb') as file:
             file.write(segment)
 
+        """Open segment with cv."""
+        video = cv.VideoCapture(str(segmentPath))
+
+        """Get the first frame and release the video."""
+        frame = video.read()[1]
+        video.release()
+
         try:
-            """Open segment with cv."""
-            video = cv.VideoCapture(str(segmentPath))
-
-            """Get the first frame and release the video."""
-            frame = video.read()[1]
-            video.release()
-
             """Resize and save the frame."""
             frame = cv.resize(frame,
                               (IMG_WIDTH, IMG_HEIGHT),
@@ -134,27 +139,28 @@ def downloadFrames(streamlinkSession, login, gameID=None):
             framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
             cv.imwrite(str(framePath), frame)
             frameNumber += 1
-            
+
             if gameID:
                 """Yield path to save it in the database."""
                 yield  str(Path.joinpath(Path(str(gameID)), framePath.name))
             else:
                 """Yield path for recognition."""
                 yield str(framePath)
-
-        except:
-            print("^^ That's normal. ^^")
-
-        finally:
+            
             """Delete segment."""
             segmentPath.unlink()
-    
-    print("Frames downloaded.")
+
+        except:
+            num = lastAddedNum(debugPath) + 1
+            segmentPathDebug = Path.joinpath(debugPath, f"{num}.ts")
+            with open(segmentPathDebug, 'wb') as file:
+                file.write(segment)
+            print(f"{segmentPathDebug.name} saved.")
 
 
 def lastAddedNum(path):
     """
-    Return last added frame number for a `path` directory.
+    Returns last added frame number for a `path` directory.
     `path` is a pathlib.Path object.
 
     Return 0 if no files in directory.
@@ -165,12 +171,12 @@ def lastAddedNum(path):
         return 0
     
     """Get all frame numbers and return max."""
-    numbers = [int(str(file.name).rstrip('.jpg')) for file in files]
+    numbers = [int(str(file.name).split('.')[0]) for file in files]
     return max(numbers)
 
 
 def delTempFiles():
-    """Delete files in `tempPath`."""
+    """Deletes files in `tempPath`."""
     
     for file in list(tempPath.iterdir()):
         file.unlink()
