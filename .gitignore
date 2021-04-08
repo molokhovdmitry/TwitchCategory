@@ -5,8 +5,7 @@ log.txt
 errors.txt
 
 dbPrint.py
-test.py
-test
+test*
 resize.py
 
 .python-version
