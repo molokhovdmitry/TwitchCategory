@@ -30,11 +30,11 @@ and predicts the game.
 import sys
 import numpy as np
 from pathlib import Path
+import requests
 
 import tensorflow as tf
 from tensorflow import keras
 from streamlink import Streamlink
-import requests
 
 from data.downloadFuncs import downloadFrames, delTempFiles
 from data.api import gameIDtoName
