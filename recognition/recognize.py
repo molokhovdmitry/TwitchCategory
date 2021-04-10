@@ -124,8 +124,9 @@ def recognizeFrame(apiSession, model, imgPath):
 
     """Print a prediction for an image."""
     print(
-        "{} with a {:.2f}% confidence."
-        .format(gameIDtoName(apiSession, CLASS_NAMES[np.argmax(score)]),
+        "Frame {}: {} with a {:.2f}% confidence."
+        .format(Path(imgPath).name.split(".")[0],
+                gameIDtoName(apiSession, CLASS_NAMES[np.argmax(score)]),
                 100 * np.max(score))
     )
 
