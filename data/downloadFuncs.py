@@ -48,18 +48,20 @@ IMG_WIDTH = IMG_SIZE["width"]
 downloadPath = Path(DOWNLOAD_PATH)
 framesPath = Path.joinpath(downloadPath, "frames")
 tempPath = Path.joinpath(downloadPath, "temp")
-
-debugPath = Path.joinpath(downloadPath, "debug")
+dataTempPath = Path.joinpath(tempPath, "data")
+recognitionTempPath = Path.joinpath(tempPath, "recognition")
 
 """Ensure paths exist."""
-if not Path.exists(downloadPath):
-    Path.mkdir(downloadPath)
-if not Path.exists(framesPath):
-    Path.mkdir(framesPath)
-if not Path.exists(tempPath):
-    Path.mkdir(tempPath)
-if not Path.exists(debugPath):
-    Path.mkdir(debugPath)
+if not downloadPath.exists():
+    downloadPath.mkdir()
+if not framesPath.exists():
+    framesPath.mkdir()
+if not tempPath.exists():
+    tempPath.mkdir()
+if not dataTempPath.exists():
+    dataTempPath.mkdir()
+if not recognitionTempPath.exists():
+    recognitionTempPath.mkdir()
 
 
 def downloadFrames(streamlinkSession, login, gameID=None):
@@ -68,7 +70,7 @@ def downloadFrames(streamlinkSession, login, gameID=None):
     resizes frames to required resolution and saves them.
     
     Saves in `framesPath`/`gameID` folder if `gameID` is passed,
-    else saves in `framesPath`/`temp`.
+    else saves in `recognitionTempPath`.
     
     Yields saved frame paths.
     Returns `None` if can't get frames.
@@ -77,10 +79,12 @@ def downloadFrames(streamlinkSession, login, gameID=None):
     if gameID:
         """Create `gameID` folder if not exists."""
         downloadPath = Path.joinpath(framesPath, str(gameID))
+        tempPath = dataTempPath
         if not Path.exists(downloadPath):
             Path.mkdir(downloadPath)
     else:
-        downloadPath = tempPath
+        downloadPath = recognitionTempPath
+        tempPath = recognitionTempPath
     
     """
     Get a dictionary of format {`quality`: `url`} containing 
@@ -116,7 +120,6 @@ def downloadFrames(streamlinkSession, login, gameID=None):
     for link, i in zip(segLinks, range(1, len(segLinks) + 1)):
 
         """Request `.ts` file."""
-        # Check request
         segment = requests.get(link).content
 
         """Save the file."""
@@ -127,35 +130,33 @@ def downloadFrames(streamlinkSession, login, gameID=None):
         """Open segment with cv."""
         video = cv.VideoCapture(str(segmentPath))
 
+        """Ensure it is a video file."""
+        if not isVideo(video):
+            video.release()
+            segmentPath.unlink()
+            continue
+
         """Get the first frame and release the video."""
         frame = video.read()[1]
         video.release()
 
-        try:
-            """Resize and save the frame."""
-            frame = cv.resize(frame,
-                              (IMG_WIDTH, IMG_HEIGHT),
-                              interpolation=cv.INTER_AREA)
-            framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
-            cv.imwrite(str(framePath), frame)
-            frameNumber += 1
+        """Resize and save the frame."""
+        frame = cv.resize(frame,
+                            (IMG_WIDTH, IMG_HEIGHT),
+                            interpolation=cv.INTER_AREA)
+        framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
+        cv.imwrite(str(framePath), frame)
+        frameNumber += 1
 
-            if gameID:
-                """Yield path to save it in the database."""
-                yield  str(Path.joinpath(Path(str(gameID)), framePath.name))
-            else:
-                """Yield path for recognition."""
-                yield str(framePath)
-            
-            """Delete segment."""
-            segmentPath.unlink()
-
-        except:
-            num = lastAddedNum(debugPath) + 1
-            segmentPathDebug = Path.joinpath(debugPath, f"{num}.ts")
-            with open(segmentPathDebug, 'wb') as file:
-                file.write(segment)
-            print(f"{segmentPathDebug.name} saved.")
+        if gameID:
+            """Yield path to save it in the database."""
+            yield  str(Path.joinpath(Path(str(gameID)), framePath.name))
+        else:
+            """Yield path for recognition."""
+            yield str(framePath)
+        
+        """Delete segment."""
+        segmentPath.unlink()
 
 
 def lastAddedNum(path):
@@ -176,7 +177,16 @@ def lastAddedNum(path):
 
 
 def delTempFiles():
-    """Deletes files in `tempPath`."""
+    """Deletes files in `recognitionTempPath`."""
     
-    for file in list(tempPath.iterdir()):
+    for file in list(recognitionTempPath.iterdir()):
         file.unlink()
+
+def isVideo(video):
+    """
+    Checks that `file` is a video file.
+
+    `video` is cv.VideoCapture object.
+    """
+
+    return video.get(cv.CAP_PROP_FRAME_HEIGHT) != 0
