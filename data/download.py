@@ -129,8 +129,7 @@ def updateData():
             downloadedStreams += download
             failCount += not download
 
-    print(colored(dirSize(DATA_PATH), 'green'))
-    printMinMax()
+    printDatasetInfo()
 
     print("Done.")
     print(f"Downloaded {frameCount} frame(s) from {downloadedStreams} stream(s)." + \
@@ -152,17 +151,8 @@ def infoThread(inputList):
     """
 
     n = 300
-
-    """Print data size."""
-    print(colored(dirSize(DATA_PATH), 'green'))
-
-    """Print the number of categories."""
-    with sessionScope() as dbSession:
-        gameCount = getGameCount(dbSession)
-    print(colored(f"{gameCount} game(s)", 'green'))
-
-    """Print categories with minumum and maximum number of frames."""
-    printMinMax()
+    
+    printDatasetInfo()
 
     """Repeat every `n` seconds."""
     i = 0
@@ -173,13 +163,20 @@ def infoThread(inputList):
             continue
         i = 0
 
-        print(colored(dirSize(DATA_PATH), 'green'))
+        printDatasetInfo()
 
-        with sessionScope() as dbSession:
-            gameCount = getGameCount(dbSession)
-        print(colored(f"{gameCount} game(s)", 'green'))
 
-        printMinMax()
+
+def printDatasetInfo():
+    """Prints dataset info."""
+
+    print(colored(dirSize(DATA_PATH), 'green'))
+
+    with sessionScope() as dbSession:
+        gameCount = getGameCount(dbSession)
+    print(colored(f"{gameCount} game(s)", 'green'))
+
+    printMinMax()
 
 
 def dirSize(path):
