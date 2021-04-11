@@ -1,8 +1,8 @@
-"""API"""
+"""API settings"""
 CLIENT_ID = ""
 ACCESS_TOKEN = ""
 
-"""Database"""
+"""Database settings"""
 DB_NAME = ""
 DB_HOST = "localhost"
 DB_PORT = "5432"
@@ -15,10 +15,18 @@ DOWNLOAD_PATH = ""
 """Image size"""
 IMG_SIZE = {"height": 240, "width": 240}
 
-"""Maximum amount of categories"""
+"""Maximum number of categories"""
 MAX_GAMES = 50
 
 """Model settings"""
 MODEL_PATH = "model/"
-EPOCHS = 10
 
+EPOCHS = 10
+DROPOUT = 0.5
+VALIDATION_SPLIT = 0.2
+
+BATCH_SIZE = 16
+SHUFFLE_BUFFER = 250
+PREFETCH_BUFFER = 1
+
+VISUALIZE_RESULTS = True

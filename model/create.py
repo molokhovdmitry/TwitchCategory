@@ -33,7 +33,10 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-from config import DOWNLOAD_PATH, MODEL_PATH, EPOCHS, IMG_SIZE
+from config import (DOWNLOAD_PATH, MODEL_PATH, IMG_SIZE,
+                    EPOCHS, DROPOUT, VALIDATION_SPLIT,
+                    BATCH_SIZE, SHUFFLE_BUFFER, PREFETCH_BUFFER,
+                    VISUALIZE_RESULTS)
 
 
 DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
@@ -82,8 +85,9 @@ def main():
     model.save(str(MODEL_FILE))
     print("Model saved.")
 
-    """Make loss and accuracy plots on the training and validation sets."""
-    makePlots(history, EPOCHS)
+    if VISUALIZE_RESULTS:
+        """Make loss and accuracy plots on the training and validation sets."""
+        makePlots(history, EPOCHS)
 
 
 def loadData(data_dir):
@@ -92,26 +96,26 @@ def loadData(data_dir):
     """Training data."""
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
         data_dir,
-        validation_split=0.2,
+        validation_split=VALIDATION_SPLIT,
         subset="training",
         seed=123,
         image_size=(IMG_HEIGHT, IMG_WIDTH),
-        batch_size=16
+        batch_size=BATCH_SIZE
     )
 
     """Validation data."""
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
         data_dir,
-        validation_split=0.2,
+        validation_split=VALIDATION_SPLIT,
         subset="validation",
         seed=123,
         image_size=(IMG_HEIGHT, IMG_WIDTH),
-        batch_size=16
+        batch_size=BATCH_SIZE
     )
 
     """Configure the dataset for performance."""
-    train_ds = train_ds.shuffle(250).prefetch(buffer_size=1)
-    val_ds = val_ds.prefetch(buffer_size=1)
+    train_ds = train_ds.shuffle(SHUFFLE_BUFFER).prefetch(buffer_size=PREFETCH_BUFFER)
+    val_ds = val_ds.prefetch(buffer_size=PREFETCH_BUFFER)
 
     return train_ds, val_ds
 
@@ -131,7 +135,7 @@ def getModel():
         layers.MaxPooling2D(),
         layers.Flatten(),
         layers.Dense(256, activation='relu'),
-        layers.Dropout(0.5),
+        layers.Dropout(DROPOUT),
         layers.Dense(NUM_CLASSES),
     ])
 
