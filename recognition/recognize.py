@@ -36,16 +36,18 @@ import tensorflow as tf
 from tensorflow import keras
 from streamlink import Streamlink
 
-from data.downloadFuncs import downloadFrames, delTempFiles
+from data.downloadFuncs import downloadFrames
 from data.api import gameIDtoName
 from data.dbFuncs import gameIDtoName as dbGameIDtoName, sessionScope
 
-from config import MODEL_PATH, IMG_SIZE
+from config import DOWNLOAD_PATH, MODEL_PATH, IMG_SIZE
 
 
 MODEL_PATH = Path(MODEL_PATH)
 MODEL_FILE = Path.joinpath(MODEL_PATH, "model.h5")
 CLASS_FILE = Path.joinpath(MODEL_PATH, "classes.txt")
+
+tempPath = Path.joinpath(Path(DOWNLOAD_PATH), "temp", "recognition")
 
 IMG_HEIGHT = IMG_SIZE["height"]
 IMG_WIDTH = IMG_SIZE["width"]
@@ -131,6 +133,14 @@ def recognizeFrame(apiSession, model, imgPath):
     )
 
     return predictions
+
+
+def delTempFiles():
+    """Deletes files in `recognitionTempPath`."""
+    
+    for file in list(tempPath.iterdir()):
+        file.unlink()
+
 
 if __name__ == "__main__":
 

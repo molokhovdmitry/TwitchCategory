@@ -142,8 +142,8 @@ def downloadFrames(streamlinkSession, login, gameID=None):
 
         """Resize and save the frame."""
         frame = cv.resize(frame,
-                            (IMG_WIDTH, IMG_HEIGHT),
-                            interpolation=cv.INTER_AREA)
+                          (IMG_WIDTH, IMG_HEIGHT),
+                          interpolation=cv.INTER_AREA)
         framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
         cv.imwrite(str(framePath), frame)
         frameNumber += 1
@@ -171,16 +171,11 @@ def lastAddedNum(path):
     if not files:
         return 0
     
-    """Get all frame numbers and return max."""
+    """Get all frame numbers."""
     numbers = [int(str(file.name).split('.')[0]) for file in files]
+
     return max(numbers)
 
-
-def delTempFiles():
-    """Deletes files in `recognitionTempPath`."""
-    
-    for file in list(recognitionTempPath.iterdir()):
-        file.unlink()
 
 def isVideo(video):
     """
