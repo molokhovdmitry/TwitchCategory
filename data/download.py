@@ -51,7 +51,7 @@ from data.dbFuncs import (sessionScope, getGameCount, updateGames,
                           minDataCategory, maxDataCategory, addFrame)
 
 from config import DOWNLOAD_PATH, MAX_GAMES
-DATA_PATH = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
+dataPath = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
 
 def updateData():
@@ -171,7 +171,7 @@ def printDatasetInfo():
     """Prints dataset info."""
 
     """Print dataset size."""
-    print(colored(dirSize(DATA_PATH), 'green'))
+    print(colored(dirSize(dataPath), 'green'))
 
     """Print the number of games."""
     with sessionScope() as dbSession:
