@@ -170,12 +170,15 @@ def infoThread(inputList):
 def printDatasetInfo():
     """Prints dataset info."""
 
+    """Print dataset size."""
     print(colored(dirSize(DATA_PATH), 'green'))
 
+    """Print the number of games."""
     with sessionScope() as dbSession:
         gameCount = getGameCount(dbSession)
     print(colored(f"{gameCount} game(s)", 'green'))
-
+    
+    """Print categories with minumum and maximum number of frames."""
     printMinMax()
 
 
