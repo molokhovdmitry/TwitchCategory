@@ -39,8 +39,9 @@ from pathlib import Path
 
 import cv2 as cv
 
-from config import IMG_SIZE
-from config import DOWNLOAD_PATH
+from data.log import log
+
+from config import IMG_SIZE, DOWNLOAD_PATH
 
 IMG_HEIGHT = IMG_SIZE["height"]
 IMG_WIDTH = IMG_SIZE["width"]
@@ -50,18 +51,14 @@ framesPath = Path.joinpath(downloadPath, "frames")
 tempPath = Path.joinpath(downloadPath, "temp")
 dataTempPath = Path.joinpath(tempPath, "data")
 recognitionTempPath = Path.joinpath(tempPath, "recognition")
+debugPath = Path.joinpath(downloadPath, "debug")
 
 """Ensure paths exist."""
-if not downloadPath.exists():
-    downloadPath.mkdir()
-if not framesPath.exists():
-    framesPath.mkdir()
-if not tempPath.exists():
-    tempPath.mkdir()
-if not dataTempPath.exists():
-    dataTempPath.mkdir()
-if not recognitionTempPath.exists():
-    recognitionTempPath.mkdir()
+paths = [downloadPath, framesPath, tempPath, dataTempPath, recognitionTempPath,
+         debugPath]
+for path in paths:
+    if not path.exists():
+        path.mkdir()
 
 
 def downloadFrames(streamlinkSession, login, gameID=None):
@@ -136,27 +133,38 @@ def downloadFrames(streamlinkSession, login, gameID=None):
             segmentPath.unlink()
             continue
 
-        """Get the first frame and release the video."""
-        frame = video.read()[1]
-        video.release()
+        try:
+            """Get the first frame and release the video."""
+            frame = video.read()[1]
+            video.release()
 
-        """Resize and save the frame."""
-        frame = cv.resize(frame,
-                          (IMG_WIDTH, IMG_HEIGHT),
-                          interpolation=cv.INTER_AREA)
-        framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
-        cv.imwrite(str(framePath), frame)
-        frameNumber += 1
+            """Delete segment."""
+            segmentPath.unlink()
 
-        if gameID:
-            """Yield path to save it in the database."""
-            yield  str(Path.joinpath(Path(str(gameID)), framePath.name))
-        else:
-            """Yield path for recognition."""
-            yield str(framePath)
+            """Resize and save the frame."""
+            frame = cv.resize(frame,
+                            (IMG_WIDTH, IMG_HEIGHT),
+                            interpolation=cv.INTER_AREA)
+            framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
+            cv.imwrite(str(framePath), frame)
+            frameNumber += 1
+
+            if gameID:
+                """Yield path to save it in the database."""
+                yield  str(Path.joinpath(Path(str(gameID)), framePath.name))
+            else:
+                """Yield path for recognition."""
+                yield str(framePath)
         
-        """Delete segment."""
-        segmentPath.unlink()
+        except Exception as e:
+            print("Unexpected Error.")
+            num = lastAddedNum(debugPath) + 1
+            segmentPathDebug = Path.joinpath(debugPath, f"{num}.ts")
+            with open(segmentPathDebug, 'wb') as file:
+                file.write(segment)
+            print(f"{segmentPathDebug.name} saved.")
+            log(login, gameID, m3u8Links, m3u8, response, segLinks, e)
+            print("Exception saved in data/log.txt.")
 
 
 def lastAddedNum(path):
