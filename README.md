@@ -8,6 +8,7 @@ frames from livestreams in popular categories.
 ![data](/images/data.png)
 Uses Streamlink to download frames, OpenCV to resize images,
 sqlalchemy to store info in a postgres database.
+![schema](/images/schema.svg)
 
 ### 2. Model Module.
 Trains a CNN model with the downloaded dataset using tensorflow.
@@ -15,7 +16,7 @@ Trains a CNN model with the downloaded dataset using tensorflow.
 Comes with a model trained on 2 GB of 240x240 images.
 
 <details>
-<summary>Categories</summary>
+<summary>Games</summary>
 
 * ARK: Survival Evolved
 * Among Us
@@ -66,7 +67,7 @@ predicting their categories with the model and calculating
 the sum of the output tensors.
 ![recognition](/images/recognition.png)
 
-## Installation
+## Install
 
 ### Clone the repository and install the requirements:
 ```
@@ -74,7 +75,7 @@ git clone https://github.com/molokhovdmitry/TwitchCategory
 cd TwitchCategory
 pip install -r requirements.txt
 ```
-### Setup the application by filling **config.py**
+### Setup the application by filling *config.py*
 
 ## How to use
 ### Data
@@ -83,6 +84,16 @@ Create and download the dataset with:
 python -m data.download
 ```
 To stop the downloading process press *Enter* in the terminal.
+
+To show the dataset info and list the downloaded categories use:
+```
+python -m data.info
+```
+
+You can clean the dataset and synchronize it with the database with:
+```
+python -m data.dbSync
+```
 
 ### Model
 Train a model with the downloaded data with:
