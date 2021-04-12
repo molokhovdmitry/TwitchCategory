@@ -67,6 +67,11 @@ predicting their categories with the model and calculating
 the sum of the output tensors.
 ![recognition](/images/recognition.png)
 
+## Requirements
+* Python 3.6–3.8
+* cuDNN 8.0
+* CUDA 11.0
+
 ## Install
 
 ### Clone the repository and install the requirements:
@@ -90,7 +95,8 @@ To show the dataset info and list the downloaded categories use:
 python -m data.info
 ```
 
-You can clean the dataset and synchronize it with the database with:
+You can synchronize the database with the dataset after deleting games/frames from
+the dataset with:
 ```
 python -m data.dbSync
 ```
