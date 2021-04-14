@@ -202,6 +202,8 @@ def syncDB(session):
             for frame in session.query(Frame).filter_by(game_id=game.id).all():
                 session.delete(frame)
 
+            session.commit()
+            
             """Delete category from `games` table."""
             session.delete(game)
 
