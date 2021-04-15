@@ -6,14 +6,15 @@
 Creates a dataset of twitch stream frames by downloading
 frames from livestreams in popular categories.
 ![data](/images/data.png)
-Uses Streamlink to download frames, OpenCV to resize images,
-sqlalchemy to store info in a postgres database.
+Uses **Streamlink** to download frames, **OpenCV** to resize images,
+**sqlalchemy** to store info in a **postgres** database.
 ![schema](/images/schema.svg)
 
 ### 2. Model Module.
 Trains a CNN model with the downloaded dataset using tensorflow.
 ![model](/images/model.png)
-Comes with a model trained on 2 GB of 240x240 images.
+Comes with a model trained on 2.5 GB of 240x240 images (2700 per
+category).
 
 <details>
 <summary>Games</summary>
@@ -21,44 +22,40 @@ Comes with a model trained on 2 GB of 240x240 images.
 * ARK: Survival Evolved
 * Among Us
 * Apex Legends
-* Brawlhalla
-* Call Of Duty: Modern Warfare
-* Call of Duty: Black Ops Cold War
+* Bloons TD 6
 * Call of Duty: Warzone
-* Conqueror's Blade
 * Counter-Strike: Global Offensive
-* DOOM Eternal
 * Dead by Daylight
 * Destiny 2
 * Dota 2
-* Escape From Tarkov
+* Enlisted
+* Escape from Tarkov
+* Euro Truck Simulator 2
 * FIFA 21
-* Fall Guys: Ultimate Knockout
 * Fortnite
-* Garena Free Fire
 * Gartic Phone
 * Grand Theft Auto V
 * Hearthstone
-* Hunt: Showdown
+* It Takes Two
 * LOST ARK
 * League of Legends
-* Magic: Legends
-* Magic: The Gathering
-* Mario Kart 8
+* League of Legends: Wild Rift
+* Mario Kart 8 Deluxe
 * Minecraft
-* Monster Hunter Rise
+* Outriders
 * Overwatch
 * PLAYERUNKNOWN'S BATTLEGROUNDS
-* Raft
-* Risk of Rain 2
 * Rocket League
-* Satisfactory
+* Rust
+* Sea of Thieves
 * Teamfight Tactics
-* The Elder Scrolls V: Skyrim
+* The Binding of Isaac: Repentance
 * Tom Clancy's Rainbow Six Siege
+* Totally Accurate Battlegrounds
 * VALORANT
-* Warframe
+* Valheim
 * World of Warcraft
+
 </details>
 
 ### 3. Recognition Module.
@@ -81,6 +78,9 @@ cd TwitchCategory
 pip install -r requirements.txt
 ```
 ### Setup the application by filling *config.py*
+Default model training settings work with:
+* 16 GB of RAM
+* GTX 1660Ti
 
 ## How to use
 ### Data
@@ -112,4 +112,92 @@ This will create **model.h5** and **classes.txt** files.
 Recognize stream category with:
 ```
 python -m recognition.recognize login
+```
+
+### Example 1
+![stream_1](/images/stream_1.jpg)
+Input:
+```
+python -m recognition.recognize jasper7se
+```
+Output:
+```
+Frame 1: VALORANT with a 99.59% confidence.
+Frame 2: VALORANT with a 100.00% confidence.
+Frame 3: VALORANT with a 100.00% confidence.
+Frame 4: VALORANT with a 100.00% confidence.
+Frame 5: VALORANT with a 100.00% confidence.
+Frame 6: VALORANT with a 100.00% confidence.
+Frame 7: VALORANT with a 100.00% confidence.
+Frame 8: VALORANT with a 100.00% confidence.
+Frame 9: VALORANT with a 100.00% confidence.
+Frame 10: VALORANT with a 100.00% confidence.
+Frame 11: VALORANT with a 100.00% confidence.
+Frame 12: VALORANT with a 100.00% confidence.
+Frame 13: VALORANT with a 100.00% confidence.
+VALORANT with a score of 5.6
+```
+
+### Example 2
+![stream_2](/images/stream_2.jpg)
+Input:
+```
+python -m recognition.recognize velloso
+```
+Output:
+```
+Frame 1: VALORANT with a 99.64% confidence.
+Frame 2: VALORANT with a 98.60% confidence.
+Frame 3: Overwatch with a 23.20% confidence.
+Frame 4: VALORANT with a 66.41% confidence.
+Frame 5: VALORANT with a 54.73% confidence.
+Frame 6: VALORANT with a 74.28% confidence.
+Frame 7: VALORANT with a 79.36% confidence.
+Frame 8: VALORANT with a 80.69% confidence.
+Frame 9: VALORANT with a 60.30% confidence.
+Frame 10: VALORANT with a 78.39% confidence.
+Frame 11: VALORANT with a 92.49% confidence.
+Frame 12: VALORANT with a 87.56% confidence.
+Frame 13: VALORANT with a 87.85% confidence.
+VALORANT with a score of -5.0
+```
+
+### Example 3
+![stream_3](/images/stream_3.jpg)
+Input:
+```
+python -m recognition.recognize otplol_
+```
+Output:
+```
+Frame 1: League of Legends with a 100.00% confidence.
+Frame 2: League of Legends with a 99.77% confidence.
+Frame 3: League of Legends with a 99.41% confidence.
+Frame 4: League of Legends with a 100.00% confidence.
+Frame 5: League of Legends with a 99.38% confidence.
+League of Legends with a score of -5.6
+```
+
+### Example 4
+![stream_4](/images/stream_4.jpg)
+Input:
+```
+python -m recognition.recognize buddha
+```
+Output:
+```
+Frame 1: Grand Theft Auto V with a 100.00% confidence.
+Frame 2: Grand Theft Auto V with a 100.00% confidence.
+Frame 3: Grand Theft Auto V with a 100.00% confidence.
+Frame 4: Grand Theft Auto V with a 100.00% confidence.
+Frame 5: Grand Theft Auto V with a 100.00% confidence.
+Frame 6: Grand Theft Auto V with a 100.00% confidence.
+Frame 7: Grand Theft Auto V with a 100.00% confidence.
+Frame 8: Grand Theft Auto V with a 100.00% confidence.
+Frame 9: Grand Theft Auto V with a 100.00% confidence.
+Frame 10: Grand Theft Auto V with a 100.00% confidence.
+Frame 11: Grand Theft Auto V with a 100.00% confidence.
+Frame 12: Grand Theft Auto V with a 100.00% confidence.
+Frame 13: Grand Theft Auto V with a 100.00% confidence.
+Grand Theft Auto V with a score of 4.0
 ```
