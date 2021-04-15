@@ -66,11 +66,11 @@ class Game(Base):
     frames = Column(Integer)
 
     def __repr__(self):
-        return f"<Game(" + \
-                        f"id='{self.id}', " + \
-                        f"name='{self.name}', " + \
-                        f"frames='{self.frames}'" + \
-                ")>"
+        return (f"<Game("
+                        f"id='{self.id}', "
+                        f"name='{self.name}', "
+                        f"frames='{self.frames}'"
+                ")>")
 
 class Frame(Base):
     __tablename__ = "frames"
@@ -82,13 +82,13 @@ class Frame(Base):
     date = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<Frame(" + \
-                        f"id='{self.id}'," + \
-                        f"path='{self.path}'," + \
-                        f"game_id='{self.game_id}', " + \
-                        f"user_login='{self.user_login}'," + \
-                        f"date='{self.date}'" + \
-                ")>"
+        return (f"<Frame("
+                        f"id='{self.id}', "
+                        f"path='{self.path}', "
+                        f"game_id='{self.game_id}', "
+                        f"user_login='{self.user_login}', "
+                        f"date='{self.date}'"
+                ")>")
 
 
 """Create tables if they don't exist."""

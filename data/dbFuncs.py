@@ -37,7 +37,8 @@ Functions:
     number of frames.
     7) Add frame information to `frames` table.
     8) Get game name from game ID. (not used)
-    9) Delete frames from `frames` table that are were from the downloaded data.
+    9) Delete frames from `frames` table that are were from the
+    downloaded data.
 """
 
 from contextlib import contextmanager
@@ -88,8 +89,8 @@ def updateGames(session, games):
         Check if the game already exists in the database and game limit
         is not exceeded.
         """
-        if not session.query(Game).filter_by(id=id).all() and\
-            gameCount < MAX_GAMES:
+        if (not session.query(Game).filter_by(id=id).all()
+            and gameCount < MAX_GAMES):
 
             """Insert the game in the table."""
             game = Game(id=id, name=name, frames=0)

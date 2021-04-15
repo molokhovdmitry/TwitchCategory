@@ -35,7 +35,6 @@ Pseudocode:
         save frame info in the database.
 """
 
-from data.db import Game
 import random
 import time
 import requests
@@ -51,6 +50,7 @@ from data.dbFuncs import (sessionScope, getGameCount, updateGames,
                           minDataCategory, maxDataCategory, addFrame)
 
 from config import DOWNLOAD_PATH, MAX_GAMES
+
 dataPath = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
 
@@ -132,8 +132,8 @@ def updateData():
     printDatasetInfo()
 
     print("Done.")
-    print(f"Downloaded {frameCount} frame(s) from {downloadedStreams} stream(s)." + \
-          f" Failed {failCount} time(s).")
+    print(f"Downloaded {frameCount} frame(s) from {downloadedStreams} "
+          f"stream(s). Failed {failCount} time(s).")
 
 
 def inputThread(inputList):
@@ -207,11 +207,11 @@ def printMinMax():
 
     if minCategory:
         print(colored("Minimum: {} frame(s) in category {}."
-                        .format(minCategory[1], minCategory[0]),
-                        'green'))
+                      .format(minCategory[1], minCategory[0]),
+                      'green'))
         print(colored("Maximum: {} frame(s) in category {}."
-                        .format(maxCategory[1], maxCategory[0]),
-                        'green'))
+                      .format(maxCategory[1], maxCategory[0]),
+                      'green'))
 
 
 if __name__ == "__main__":

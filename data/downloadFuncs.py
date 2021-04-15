@@ -54,8 +54,8 @@ recognitionTempPath = Path.joinpath(tempPath, "recognition")
 debugPath = Path.joinpath(downloadPath, "debug")
 
 """Ensure paths exist."""
-paths = [downloadPath, framesPath, tempPath, dataTempPath, recognitionTempPath,
-         debugPath]
+paths = [downloadPath, framesPath, tempPath, dataTempPath,
+         recognitionTempPath, debugPath]
 for path in paths:
     if not path.exists():
         path.mkdir()
@@ -143,8 +143,8 @@ def downloadFrames(streamlinkSession, login, gameID=None):
 
             """Resize and save the frame."""
             frame = cv.resize(frame,
-                            (IMG_WIDTH, IMG_HEIGHT),
-                            interpolation=cv.INTER_AREA)
+                              (IMG_WIDTH, IMG_HEIGHT),
+                              interpolation=cv.INTER_AREA)
             framePath = Path.joinpath(downloadPath, f"{frameNumber}.jpg")
             cv.imwrite(str(framePath), frame)
             frameNumber += 1

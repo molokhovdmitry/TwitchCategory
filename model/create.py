@@ -114,7 +114,8 @@ def loadData(data_dir):
     )
 
     """Configure the dataset for performance."""
-    train_ds = train_ds.shuffle(SHUFFLE_BUFFER).prefetch(buffer_size=PREFETCH_BUFFER)
+    train_ds = train_ds.shuffle(SHUFFLE_BUFFER).\
+                        prefetch(buffer_size=PREFETCH_BUFFER)
     val_ds = val_ds.prefetch(buffer_size=PREFETCH_BUFFER)
 
     return train_ds, val_ds
@@ -124,7 +125,8 @@ def getModel():
     """Creates and compiles neural network."""
 
     model = Sequential([
-        layers.experimental.preprocessing.Rescaling(1./255, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+        layers.experimental.preprocessing.\
+            Rescaling(1./255, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
         layers.Conv2D(128, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
         layers.Conv2D(64, 3, padding='same', activation='relu'),

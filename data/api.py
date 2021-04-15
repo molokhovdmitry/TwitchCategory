@@ -144,7 +144,8 @@ def getStreams(session, gameID):
         return streams
 
     except (KeyError, TypeError, ValueError):
-        print(f"getStreams error. Can't parse the response. Game ID: {gameID}")
+        print("getStreams error. Can't parse the response. "
+             f"Game ID: {gameID}")
         return None
     
 
@@ -169,5 +170,6 @@ def gameIDtoName(session, gameID):
         return game
 
     except (KeyError, TypeError, ValueError):
-        print(f"gameIDtoName error. Can't parse the response. Game ID: {gameID}")
+        print("gameIDtoName error. Can't parse the response. "
+             f"Game ID: {gameID}")
         return None
