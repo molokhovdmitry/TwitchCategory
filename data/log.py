@@ -31,13 +31,12 @@ path = Path.joinpath(Path("data"), "log.txt")
 
 def log(*args):
     """Writes `text` to a log file."""
-
-    """Create file if not exists."""
+    # Create file if not exists.
     if not path.exists():
         print("Created data/log.txt file.")
         path.touch()
 
-    """Write in file."""
+    # Write in file.
     with path.open("a") as f:
         for arg in args:
             f.write(f"{arg}\n")

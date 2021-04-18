@@ -22,12 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-"""
-This file updates the database after data cleaning.
-"""
+"""This file updates the database after data cleaning."""
 
 from data.db import Game, Frame
-from data.dbFuncs import syncDB, updateFrameCount, sessionScope
+from data.db_functions import sync_db, update_frame_count, session_scope
 
 def sync():
     """
@@ -36,23 +34,22 @@ def sync():
     categories and frames.
     """
 
-    with sessionScope() as session:
+    with session_scope() as session:
 
-        gamesBefore = len(session.query(Game).all())
-        framesBefore = len(session.query(Frame).all())
+        games_before = len(session.query(Game).all())
+        frames_before = len(session.query(Frame).all())
 
-        """Update the database."""
-        syncDB(session)
-        updateFrameCount(session)
+        # Update the database.
+        sync_db(session)
+        update_frame_count(session)
 
-        gamesAfter = len(session.query(Game).all())
-        framesAfter = len(session.query(Frame).all())
+        games_after = len(session.query(Game).all())
+        frames_after = len(session.query(Frame).all())
 
-        deletedGames = gamesBefore - gamesAfter
-        deletedFrames = framesBefore - framesAfter
-        
-        
-    print(f"Deleted {deletedGames} game(s) and {deletedFrames} frame(s) "
+    deleted_games = games_before - games_after
+    deleted_frames = frames_before - frames_after
+
+    print(f"Deleted {deleted_games} game(s) and {deleted_frames} frame(s) "
            "from the database.")
 
 

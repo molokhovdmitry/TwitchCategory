@@ -22,9 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-"""
-This file creates the model (model.h5) and class (classes.txt) files.
-"""
+"""This file creates the model (model.h5) and class (classes.txt) files."""
 
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -47,11 +45,11 @@ CLASS_FILE = Path.joinpath(MODEL_PATH, "classes.txt")
 IMG_HEIGHT = IMG_SIZE["height"]
 IMG_WIDTH = IMG_SIZE["width"]
 
-"""Get all classes."""
+# Get all classes.
 CLASS_NAMES = [category.name for category in DATA_PATH.iterdir()]
 NUM_CLASSES = len(CLASS_NAMES)
 
-"""Save classes in a txt file."""
+# Save classes in a txt file.
 CLASS_FILE.touch()
 classes = ""
 for name in CLASS_NAMES:
@@ -68,32 +66,30 @@ config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 
 
-def main():
+def create():
     """Creates a model."""
+    # Load the data.
+    train_ds, val_ds = load_data(str(DATA_PATH))
 
-    """Load the data."""
-    trainData, valData = loadData(str(DATA_PATH))
-
-    """Create and compile the model."""
-    model = getModel()
+    # Create and compile the model.
+    model = get_model()
     model.summary()
 
-    """Fit the model and save the history."""
-    history = model.fit(trainData, validation_data=valData, epochs=EPOCHS)
+    # Fit the model and save the history.
+    history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS)
 
-    """Save the model to a file."""
+    # Save the model to a file.
     model.save(str(MODEL_FILE))
     print("Model saved.")
 
     if VISUALIZE_RESULTS:
-        """Make loss and accuracy plots on the training and validation sets."""
-        makePlots(history, EPOCHS)
+        # Make loss and accuracy plots with history data.
+        make_plots(history, EPOCHS)
 
 
-def loadData(data_dir):
+def load_data(data_dir):
     """Loads the data. Returns tuple (`train_ds`, `val_ds`)."""
-
-    """Training data."""
+    # Training data.
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
         data_dir,
         validation_split=VALIDATION_SPLIT,
@@ -103,7 +99,7 @@ def loadData(data_dir):
         batch_size=BATCH_SIZE
     )
 
-    """Validation data."""
+    # Validation data.
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
         data_dir,
         validation_split=VALIDATION_SPLIT,
@@ -113,7 +109,7 @@ def loadData(data_dir):
         batch_size=BATCH_SIZE
     )
 
-    """Configure the dataset for performance."""
+    # Configure the dataset for performance.
     train_ds = train_ds.shuffle(SHUFFLE_BUFFER).\
                         prefetch(buffer_size=PREFETCH_BUFFER)
     val_ds = val_ds.prefetch(buffer_size=PREFETCH_BUFFER)
@@ -121,9 +117,8 @@ def loadData(data_dir):
     return train_ds, val_ds
 
 
-def getModel():
+def get_model():
     """Creates and compiles neural network."""
-
     model = Sequential([
         layers.experimental.preprocessing.\
             Rescaling(1./255, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
@@ -150,9 +145,8 @@ def getModel():
     return model
 
 
-def makePlots(history, epochs):
+def make_plots(history, epochs):
     """Visualizes training results."""
-
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
 
@@ -177,4 +171,4 @@ def makePlots(history, epochs):
 
 
 if __name__ == "__main__":
-    main()
+    create()

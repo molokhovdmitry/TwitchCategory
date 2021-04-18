@@ -22,42 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-"""
-This file prints information about the database and a list of all games.
-"""
+"""This file prints information about the database and a list of all games."""
 
 from pathlib import Path
 import requests
 
-from data.download import printDatasetInfo
-from data.api import gameIDtoName
+from data.download import print_dataset_info
+from data.api import game_id_to_name
 
 from config import DOWNLOAD_PATH
 
-dataPath = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
+data_path = Path.joinpath(Path(DOWNLOAD_PATH), "frames")
 
 def info():
     """Prints info and a list of games."""
+    print_dataset_info()
+    print_games()
 
-    printDatasetInfo()
-    printGames()
 
-
-def printGames():
+def print_games():
     """Prints all games from the dataset."""
+    # Get game IDs.
+    game_ids = list(p.name for p in data_path.glob('*'))
 
-    """Get game IDs."""
-    gameIDs = list(p.name for p in dataPath.glob('*'))
-
-    """Get game names."""
-    apiSession = requests.session()
+    # Get game names.
+    api_session = requests.session()
     games = dict()
-    for gameID in gameIDs:
-        games[gameID] = gameIDtoName(apiSession, gameID)
+    for game_id in game_ids:
+        games[game_id] = game_id_to_name(api_session, game_id)
     
-    """Print in alphabetical order."""
-    for gameID in sorted(games, key=games.get):
-        print(f"{games[gameID]}, game ID: {gameID}.")
+    # Print in alphabetical order.
+    for game_id in sorted(games, key=games.get):
+        print(f"{games[game_id]}, game ID: {game_id}.")
 
 if __name__ == "__main__":
     info()

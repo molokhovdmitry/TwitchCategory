@@ -23,12 +23,12 @@ SOFTWARE.
 """
 
 """
-This file has functions that get data from twitch api.
+This file has functions that get data from twitch api.  
 
-Functions:
-    1) Request helper function.
-    2) Get top games by amount of viewers.
-    3) Get user logins that broadcast a specified game ID.
+Functions:  
+    1) Request helper function.  
+    2) Get top games by amount of viewers.  
+    3) Get user logins that broadcast a specified game ID.  
     4) Get game name from game ID.
 """
 
@@ -42,10 +42,8 @@ HEADERS = {
     'Client-Id': CLIENT_ID
 }
 
-def requestQuery(session, query, payload):
+def request_query(session, query, payload):
     """Makes a request and returns a response."""
-
-    """Contact API."""
     try:
         response = session.get(BASE_URL + query,
                                params=payload,
@@ -57,14 +55,13 @@ def requestQuery(session, query, payload):
     except requests.RequestException:
         return None
 
-def getTopGames(session):
+def get_top_games(session):
     """
     Returns top games dictionary of format:
     {game_id: game_name}
     """
-
-    """Ignore these categories:"""
-    notVideoGames = {
+    # Ignore these categories:
+    not_video_games = {
         "509658": "Just Chatting",
         "26936": "Music",
         "509660": "Art",
@@ -81,20 +78,20 @@ def getTopGames(session):
         "498566": "Slots"
     }
     
-    """Number of objects to return (100 max)."""
+    # Number of categories to return (100 max).
     first = 25
 
-    """Make a query."""
+    # Make a query.
     query = f'games/top'
     payload = {'first': first}
 
-    """Make a request."""
-    response = requestQuery(session, query, payload)
+    # Make a request.
+    response = request_query(session, query, payload)
     if not response:
         print("getTopGames error. No response from API.")
         return None
 
-    """Parse the response."""
+    # Parse the response.
     try:
         quote = response.json()
         games = dict()
@@ -103,12 +100,12 @@ def getTopGames(session):
             id = game['id']
             name = game['name']
 
-            """Ensure it's a video game."""
-            if id in notVideoGames:
+            # Ensure it's a video game.
+            if id in not_video_games:
                 continue
 
-            """Ensure the game is streamed by more than 90 streamers."""
-            if len(getStreams(session, id)) > 90:
+            # Ensure the game is streamed by more than 90 streamers.
+            if len(get_streams(session, id)) > 90:
                 games[id] = name
 
         return games
@@ -118,23 +115,22 @@ def getTopGames(session):
         return None
 
 
-def getStreams(session, gameID):
+def get_streams(session, game_id):
     """Returns a set of user logins that broadcast a specified game ID."""
-
-    """Number of objects to return (100 max)."""
+    # Number of logins to return (100 max).
     first = 100
 
-    """Make a query."""
+    # Make a query.
     query = f"streams"
-    payload = {'game_id': gameID, 'first': first}
+    payload = {'game_id': game_id, 'first': first}
 
-    """Make a request."""
-    response = requestQuery(session, query, payload)
+    # Make a request.
+    response = request_query(session, query, payload)
     if not response:
-        print(f"getStreams error. No response from API. Game ID: {gameID}")
+        print(f"getStreams error. No response from API. Game ID: {game_id}")
         return None
     
-    """Parse the response."""
+    # Parse the response.
     try:
         quote = response.json()
         streams = set()
@@ -145,24 +141,23 @@ def getStreams(session, gameID):
 
     except (KeyError, TypeError, ValueError):
         print("getStreams error. Can't parse the response. "
-             f"Game ID: {gameID}")
+             f"Game ID: {game_id}")
         return None
     
 
-def gameIDtoName(session, gameID):
+def game_id_to_name(session, game_id):
     """Converts game ID to name using the API."""
-
-    """Make a query."""
+    # Make a query.
     query = f"games"
-    payload = {'id': gameID}
+    payload = {'id': game_id}
 
-    """Make a request."""
-    response = requestQuery(session, query, payload)
+    # Make a request.
+    response = request_query(session, query, payload)
     if not response:
-        print(f"gameIDtoName error. No response from API. Game ID: {gameID}")
+        print(f"gameIDtoName error. No response from API. Game ID: {game_id}")
         return None
 
-    """Parse the response."""
+    # Parse the response.
     try:
         quote = response.json()
         game = quote['data'][0]['name']
@@ -171,5 +166,5 @@ def gameIDtoName(session, gameID):
 
     except (KeyError, TypeError, ValueError):
         print("gameIDtoName error. Can't parse the response. "
-             f"Game ID: {gameID}")
+             f"Game ID: {game_id}")
         return None

@@ -98,7 +98,7 @@ python -m data.info
 You can synchronize the database with the dataset after deleting games/frames from
 the dataset with:
 ```
-python -m data.dbSync
+python -m data.db_sync
 ```
 
 ### Model

@@ -23,9 +23,9 @@ SOFTWARE.
 """
 
 """
-This file connects to a database and creates tables if they don't exist.
+This file connects to a database and creates tables if they don't exist.  
 
-Made with:
+Made with:  
 https://docs.sqlalchemy.org/en/13/orm/tutorial.html#object-relational-tutorial
 """
 
@@ -41,7 +41,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from config import DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
 
 
-"""Connect to postgres database."""
+# Connect to postgres database.
 DATABASE = {
     'drivername': 'postgres',
     'host': DB_HOST,
@@ -55,10 +55,11 @@ engine = create_engine(URL(**DATABASE), echo=False)
 Session = sessionmaker(bind=engine)
 
 
-"""Create schema."""
+# Create schema.
 Base = declarative_base()
 
 class Game(Base):
+    """`games` table."""
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
@@ -73,6 +74,7 @@ class Game(Base):
                 ")>")
 
 class Frame(Base):
+    """`frames` table."""
     __tablename__ = "frames"
 
     id = Column(Integer, primary_key=True)
@@ -91,5 +93,5 @@ class Frame(Base):
                 ")>")
 
 
-"""Create tables if they don't exist."""
+# Create tables if they don't exist.
 Base.metadata.create_all(engine)

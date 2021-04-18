@@ -36,23 +36,21 @@ import tensorflow as tf
 from tensorflow import keras
 from streamlink import Streamlink
 
-from data.downloadFuncs import downloadFrames
-from data.api import gameIDtoName
-from data.dbFuncs import gameIDtoName as dbGameIDtoName, sessionScope
+from data.download_functions import download_frames
+from data.api import game_id_to_name
 
 from config import DOWNLOAD_PATH, MODEL_PATH, IMG_SIZE
-
 
 MODEL_PATH = Path(MODEL_PATH)
 MODEL_FILE = Path.joinpath(MODEL_PATH, "model.h5")
 CLASS_FILE = Path.joinpath(MODEL_PATH, "classes.txt")
 
-tempPath = Path.joinpath(Path(DOWNLOAD_PATH), "temp", "recognition")
+temp_path = Path.joinpath(Path(DOWNLOAD_PATH), "temp", "recognition")
 
 IMG_HEIGHT = IMG_SIZE["height"]
 IMG_WIDTH = IMG_SIZE["width"]
 
-"""Get all classes."""
+# Get all classes.
 CLASS_NAMES = []
 with CLASS_FILE.open() as f:
     for line in f.readlines():
@@ -70,81 +68,78 @@ session = tf.compat.v1.Session(config=config)
 
 def recognize(login):
     """Recognizes livestream category."""
-
-    """Create streamlink and api sessions."""
-    streamlinkSession = Streamlink()
-    apiSession = requests.session()
+    # Create streamlink and api sessions.
+    streamlink_session = Streamlink()
+    api_session = requests.session()
     
-    """Load the model."""
+    # Load the model.
     model = keras.models.load_model(str(MODEL_FILE))
 
-    """Recognize frames."""
-    frames = list(downloadFrames(streamlinkSession, login))
+    # Recognize frames.
+    frames = list(download_frames(streamlink_session, login))
     if not frames:
         print("Couldn't download stream frames.")
         return None
-    scores = [recognizeFrame(apiSession, model, frame) for frame in frames]
+    scores = [recognize_frame(api_session, model, frame) for frame in frames]
 
-    """Delete downloaded frames."""
-    delTempFiles()
+    # Delete downloaded frames.
+    del_temp_files()
 
-    """Add tensors."""
+    # Add tensors.
     scores = np.add.reduce(scores)[0]
 
-    """Calculate score for a stream."""
+    # Calculate score for a stream.
     score = np.max(scores) / len(frames)
 
-    """Get game ID."""
+    # Get game ID.
     index = np.argmax(scores)
-    gameID = CLASS_NAMES[index]
+    game_id = CLASS_NAMES[index]
 
-    """Get game name from game ID."""
-    game = gameIDtoName(apiSession, gameID)
+    # Get game name from game ID.
+    game = game_id_to_name(api_session, game_id)
 
     print("{} with a score of {:.1f}".format(game, score))
 
     return game, score
 
 
-def recognizeFrame(apiSession, model, imgPath):
+def recognize_frame(api_session, model, img_path):
     """Recognizes image class."""
-
-    """Load and resize the image."""
+    # Load and resize the image.
     img = keras.preprocessing.image.load_img(
-        imgPath, target_size=(IMG_HEIGHT, IMG_WIDTH)
+        img_path, target_size=(IMG_HEIGHT, IMG_WIDTH)
     )
 
-    """Convert the image to an array."""
-    imgArray = keras.preprocessing.image.img_to_array(img)
-    imgArray = tf.expand_dims(imgArray, 0)
+    # Convert the image to an array.
+    img_array = keras.preprocessing.image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)
 
-    """Predict the game."""
-    predictions = model(imgArray)
+    # Predict the game.
+    predictions = model(img_array)
 
-    """Calculate game score for an image."""
+    # Calculate game score for an image.
     score = tf.nn.softmax(predictions[0])
 
-    """Print a prediction for an image."""
+    # Print a prediction for an image.
     print(
         "Frame {}: {} with a {:.2f}% confidence."
-        .format(Path(imgPath).name.split(".")[0],
-                gameIDtoName(apiSession, CLASS_NAMES[np.argmax(score)]),
+        .format(Path(img_path).name.split(".")[0],
+                game_id_to_name(api_session, CLASS_NAMES[np.argmax(score)]),
                 100 * np.max(score))
     )
 
     return predictions
 
 
-def delTempFiles():
+def del_temp_files():
     """Deletes files in `recognitionTempPath`."""
-    
-    for file in list(tempPath.iterdir()):
+    for file in list(temp_path.iterdir()):
         file.unlink()
 
 
 if __name__ == "__main__":
 
-    """Check command arguments."""
+    # Check command arguments.
     if len(sys.argv) != 2:
         print("Usage: python -m recognition.recognition login")
         sys.exit()
