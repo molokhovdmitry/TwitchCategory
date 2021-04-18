@@ -1,24 +1,24 @@
-"""API settings"""
+# API settings.
 CLIENT_ID = ""
 ACCESS_TOKEN = ""
 
-"""Database settings"""
+# Database settings.
 DB_NAME = ""
 DB_HOST = "localhost"
 DB_PORT = "5432"
 DB_USER = ""
 DB_PASSWORD = ""
 
-"""Data download path"""
+# Data download path.
 DOWNLOAD_PATH = ""
 
-"""Image size"""
+# Image size.
 IMG_SIZE = {"height": 240, "width": 240}
 
-"""Maximum number of categories"""
-MAX_GAMES = 50
+# Maximum number of categories.
+MAX_GAMES = 40
 
-"""Model settings"""
+# Model settings.
 MODEL_PATH = "model/"
 
 EPOCHS = 10
